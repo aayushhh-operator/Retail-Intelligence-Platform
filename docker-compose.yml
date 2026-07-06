@@ -1,6 +1,110 @@
-# Docker Compose services will be introduced in later phases.
-# TODO(phase-5): Add PostgreSQL warehouse service.
-# TODO(phase-7): Add Airflow scheduler, webserver, and metadata database.
-# TODO(phase-8): Add Spark services if local cluster execution is required.
+version: '3.8'
 
-services: {}
+x-airflow-common:
+  &airflow-common
+  build: .
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${DATABASE_USER}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE_NAME}
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/projects/airflow/dags
+    
+    # Custom pipeline database mapping matching .env
+    DATABASE_HOST: postgres
+    DATABASE_PORT: 5432
+    DATABASE_NAME: ${DATABASE_NAME}
+    DATABASE_USER: ${DATABASE_USER}
+    DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    ENABLE_DATA_GENERATION: ${ENABLE_DATA_GENERATION:-False}
+    
+    # We must append our project directory to PYTHONPATH so Airflow can resolve our custom modules
+    PYTHONPATH: /opt/airflow/projects
+  volumes:
+    - ./:/opt/airflow/projects
+    - airflow_logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+  networks:
+    - retail_network
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: retail_postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - retail_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: retail_airflow_init
+    command: version
+    entrypoint:
+      - bash
+      - -c
+      - |
+        # Initialize Airflow DB
+        airflow db init
+        
+        # Create Admin User
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          --password admin
+          
+        echo "Airflow initialization completed successfully."
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: retail_airflow_webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: retail_airflow_scheduler
+    command: scheduler
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+networks:
+  retail_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  airflow_logs:

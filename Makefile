@@ -1,21 +1,22 @@
-.PHONY: setup run test lint clean
+.PHONY: docker-up docker-down docker-reset airflow-init logs
 
-setup:
-	# TODO(phase-1): Create a virtual environment and install dependencies.
-	python -m pip install -r requirements.txt
+# Spin up the entire containerized architecture in detached mode
+docker-up:
+	docker compose up -d
 
-run:
-	# TODO(phase-2): Execute the configured pipeline workflow.
-	python pipeline.py
+# Stop all containers and remove them
+docker-down:
+	docker compose down
 
-test:
-	# TODO(phase-1): Expand tests as implementation begins.
-	pytest
+# Destroy containers and remove all persistent volumes (Wipes Database!)
+docker-reset:
+	docker compose down -v
+	@echo "All containers and volumes destroyed."
 
-lint:
-	# TODO(phase-11): Add ruff, black, or another agreed quality tool.
-	python -m compileall .
+# Re-run the Airflow init script if needed
+airflow-init:
+	docker compose run --rm airflow-init
 
-clean:
-	# TODO(phase-11): Add safe cleanup for generated runtime artifacts.
-	python scripts/setup_project.py --check
+# View live logs of all services
+logs:
+	docker compose logs -f

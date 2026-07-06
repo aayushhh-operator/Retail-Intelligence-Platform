@@ -155,27 +155,46 @@ Planned capabilities include:
 - AI-assisted SQL generation and pipeline failure explanation.
 - CI checks, quality gates, and production-style documentation.
 
-## How To Run Later
+## How to Run (Docker Containerized - Phase 8)
 
-The Phase 1 source data generator can be run now:
+The entire Retail Intelligence Platform is now fully containerized! You can spin up the complete orchestration environment, including PostgreSQL and Apache Airflow, with a single command.
 
-```bash
-python data_generator/generate_all.py
-```
-
-It writes generated upstream-style CSV files to `data/source/`.
-
-Future phases will add runnable services and pipeline commands.
-
-Expected future workflow:
+### 1. Start the Infrastructure
+Use the provided Makefile shortcuts or Docker Compose directly:
 
 ```bash
-make setup
-make run
-make test
+make docker-up
+# or: docker compose up -d
 ```
 
-The current `pipeline.py` entry point only initializes logging and records the intended future execution order.
+This starts:
+- **`postgres`**: The Retail Intelligence data warehouse and Airflow metadata database (Port 5432).
+- **`airflow-webserver`**: The Airflow UI (Port 8080).
+- **`airflow-scheduler`**: The Airflow task execution scheduler.
+
+### 2. Initialize Airflow (First Run Only)
+If this is your first time bringing the containers up, you must initialize the Airflow database and create an admin user:
+
+```bash
+make airflow-init
+# or: docker compose run --rm airflow-init
+```
+
+### 3. Accessing the System
+- **Airflow UI**: Navigate to [http://localhost:8080](http://localhost:8080) and log in with `admin` / `admin`. You can manually trigger the `retail_intelligence_pipeline` DAG here.
+- **PostgreSQL**: Connect to `localhost:5432` using `postgres` / `postgres`. The database name is `RetailIntelligencePlatform`.
+- **Logs**: Run `make logs` to watch live logs from all containers.
+
+### 4. How Data Flows Inside Containers
+1. The project source code (`./`) is bind-mounted directly into the Airflow containers at `/opt/airflow/projects`. This means any code edits you make locally are instantly reflected in Airflow without rebuilding images.
+2. When the DAG executes, Airflow simply calls our Python modules (`extract.manager`, `transform.manager`, etc.).
+3. These modules connect to the `postgres` container over the `retail_network` using credentials supplied via the `.env` file to extract, transform, and load the analytical Star Schema.
+
+### 5. Tearing Down
+To stop the services and completely wipe the database (useful for testing a clean slate):
+```bash
+make docker-reset
+```
 
 ## Design Philosophy
 

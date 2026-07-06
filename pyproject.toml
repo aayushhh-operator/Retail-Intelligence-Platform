@@ -1,0 +1,28 @@
+[project]
+name = "retail-intelligence-platform"
+version = "0.1.0"
+description = "A production-oriented data engineering platform for retail analytics."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Retail Intelligence Platform Contributors" }
+]
+keywords = [
+    "data-engineering",
+    "retail-analytics",
+    "etl",
+    "data-warehouse",
+    "airflow",
+    "pyspark"
+]
+
+[project.urls]
+Repository = "https://github.com/your-organization/retail-intelligence-platform"
+Documentation = "https://github.com/your-organization/retail-intelligence-platform/tree/main/docs"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-p no:asyncio --basetemp=.pytest_tmp"
+tmp_path_retention_policy = "none"

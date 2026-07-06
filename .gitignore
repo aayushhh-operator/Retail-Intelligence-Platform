@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs and runtime output
+logs/*
+!logs/.gitkeep
+*.log
+
+# Generated datasets and local data artifacts
+data/source/*
+data/raw/*
+data/processed/*
+data/exports/*
+!data/source/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/exports/.gitkeep
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+.pytest_tmp/
+
+# OS files
+.DS_Store
+Thumbs.db

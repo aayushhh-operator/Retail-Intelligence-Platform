@@ -1,0 +1,6 @@
+# Docker Compose services will be introduced in later phases.
+# TODO(phase-5): Add PostgreSQL warehouse service.
+# TODO(phase-7): Add Airflow scheduler, webserver, and metadata database.
+# TODO(phase-8): Add Spark services if local cluster execution is required.
+
+services: {}

@@ -1,0 +1,14 @@
+pandas
+numpy
+faker
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pytest
+streamlit
+pyspark
+apache-airflow
+plotly
+requests
+langchain
+openai

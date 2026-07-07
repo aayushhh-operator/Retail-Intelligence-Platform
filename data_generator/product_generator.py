@@ -39,47 +39,43 @@ BRANDS_BY_CATEGORY = {
 
 
 def generate_products(rng: random.Random) -> list[dict[str, Any]]:
-    """Generate products with category-sensitive pricing and controlled defects."""
-    fake = create_faker()
-    rows: list[dict[str, Any]] = []
-    issue_indexes = choose_issue_indexes(rng, config.NUMBER_OF_PRODUCTS)
-
-    for index in range(1, config.NUMBER_OF_PRODUCTS + 1):
-        category = rng.choice(config.CATEGORIES)
-        price_low, price_high = config.CATEGORY_PRICE_RANGES[category]
-        selling_price = money(rng.uniform(price_low, price_high))
-        cost_price = money(selling_price * rng.uniform(0.45, 0.82))
-        profit_margin = money((selling_price - cost_price) / selling_price)
-        brand = rng.choice(BRANDS_BY_CATEGORY[category])
-
-        row = {
-            "product_id": make_id("PRD", index),
-            "product_name": f"{brand} {fake.word().title()} {category[:-1] if category.endswith('s') else category}",
-            "category": category,
-            "brand": brand,
-            "supplier": f"{fake.company()} Supplies",
-            "cost_price": cost_price,
-            "selling_price": selling_price,
-            "profit_margin": profit_margin,
-            "weight": money(rng.uniform(0.05, 15.0)),
-            "rating": round(rng.uniform(2.8, 5.0), 1),
-            "launch_date": format_date(random_date_between(rng, config.START_DATE, config.END_DATE)),
-            "is_active": rng.choice((True, True, True, False)),
-            "SKU": f"{category[:3].upper()}-{brand[:3].upper()}-{index:06d}",
-        }
-
-        if index - 1 in issue_indexes:
-            issue_type = rng.choice(("negative_price", "missing_product_id", "outlier_price", "invalid_rating"))
-            if issue_type == "negative_price":
-                row["selling_price"] = money(-abs(float(row["selling_price"])))
-            elif issue_type == "missing_product_id":
-                row["product_id"] = ""
-            elif issue_type == "outlier_price":
-                row["selling_price"] = money(float(row["selling_price"]) * 50)
-            elif issue_type == "invalid_rating":
-                row["rating"] = 7.5
-
-        rows.append(row)
-
-    return rows
+    """Fetch products from FakeStore API so synthetic data matches extraction."""
+    import urllib.request
+    import json
+    
+    # We fetch from FakeStore API to ensure Phase 1 generated orders
+    # have product_ids that match what Phase 2 will extract.
+    try:
+        req = urllib.request.Request(
+            "https://fakestoreapi.com/products",
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            
+        rows: list[dict[str, Any]] = []
+        for p in payload:
+            selling_price = float(p["price"])
+            cost_price = money(selling_price * 0.6)
+            
+            row = {
+                "product_id": str(p["id"]),
+                "product_name": p["title"],
+                "category": p["category"].title(),
+                "brand": "FakeStore",
+                "supplier": "FakeStore Supplies",
+                "cost_price": cost_price,
+                "selling_price": money(selling_price),
+                "profit_margin": money(0.4),
+                "weight": money(1.0),
+                "rating": float(p["rating"]["rate"]),
+                "launch_date": format_date(random_date_between(rng, config.START_DATE, config.END_DATE)),
+                "is_active": True,
+                "SKU": f"FS-{p['id']:06d}",
+            }
+            rows.append(row)
+        return rows
+    except Exception as e:
+        print(f"Failed to fetch FakeStore products in generator: {e}")
+        return []
 

@@ -16,7 +16,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Display chat history
-for msg in st.session_state.messages:
+for idx, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
         if "sql" in msg:
@@ -27,7 +27,7 @@ for msg in st.session_state.messages:
         if "df" in msg and msg["df"] is not None:
             st.dataframe(msg["df"], use_container_width=True)
         if "chart" in msg and msg["chart"] is not None:
-            st.plotly_chart(msg["chart"], use_container_width=True)
+            st.plotly_chart(msg["chart"], use_container_width=True, key=f"chart_history_{idx}")
 
 # Input
 if prompt := st.chat_input("E.g., What are my top 5 selling products?"):
@@ -52,7 +52,8 @@ if prompt := st.chat_input("E.g., What are my top 5 selling products?"):
                     st.caption(f"Execution Time: {response['execution_time']}s")
                 st.dataframe(response["df"], use_container_width=True)
                 if response["chart"]:
-                    st.plotly_chart(response["chart"], use_container_width=True)
+                    import uuid
+                    st.plotly_chart(response["chart"], use_container_width=True, key=f"chart_new_{uuid.uuid4().hex}")
                 
                 # Save to history
                 st.session_state.messages.append({

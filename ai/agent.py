@@ -1,5 +1,5 @@
 """AI Analyst Orchestrator."""
-from ai.prompt_builder import build_sql_prompt
+from ai.prompt_builder import build_sql_prompt, build_sql_correction_prompt
 from ai.llm import generate_completion
 from ai.sql_executor import execute_sql
 from ai.result_formatter import format_dataframe
@@ -17,8 +17,22 @@ class AIAnalystAgent:
             raw_sql = generate_completion([{"role": "user", "content": sql_prompt}])
             result["sql"] = raw_sql
             
-            # 2. Execute SQL (will auto-validate)
-            df = execute_sql(raw_sql)
+            # 2. Execute SQL with Self-Correction Retry Loop
+            df = None
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    df = execute_sql(raw_sql)
+                    result["sql"] = raw_sql # Update with the successful one if it changed
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        # Self-correct
+                        correction_prompt = build_sql_correction_prompt(user_question, raw_sql, str(e))
+                        raw_sql = generate_completion([{"role": "user", "content": correction_prompt}])
+                    else:
+                        raise e
+            
             result["df"] = df
             result["execution_time"] = round(time.time() - start_time, 2)
             

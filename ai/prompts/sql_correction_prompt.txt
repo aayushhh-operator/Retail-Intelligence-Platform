@@ -1,0 +1,17 @@
+The user asked: "{question}"
+
+You generated the following SQL:
+{failed_sql}
+
+However, executing this SQL resulted in the following database error:
+{error_msg}
+
+Here is the database schema for your reference:
+{schema}
+
+Please fix the SQL query to resolve the error. 
+IMPORTANT RULES:
+1. Ensure you are returning ONLY a single valid PostgreSQL statement.
+2. DO NOT return multiple statements.
+3. DO NOT use mathematical unicode symbols like `≤`. Use standard SQL operators like `<=`.
+4. Return ONLY the raw SQL query without markdown formatting.

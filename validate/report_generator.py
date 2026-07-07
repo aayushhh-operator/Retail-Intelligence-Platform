@@ -18,7 +18,9 @@ class ValidationReportGenerator:
         self.output_dir = output_dir
         self.dataset_dir = output_dir / "dataset_reports"
 
-    def write_all(self, reports: list[dict[str, Any]], recommendation: dict[str, str]) -> dict[str, Path]:
+    def write_all(
+        self, reports: list[dict[str, Any]], recommendation: dict[str, str]
+    ) -> dict[str, Path]:
         """Write all validation report artifacts."""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.dataset_dir.mkdir(parents=True, exist_ok=True)
@@ -39,11 +41,21 @@ class ValidationReportGenerator:
         self._write_html(paths["html"], reports, summary)
         return paths
 
-    def _summary(self, reports: list[dict[str, Any]], recommendation: dict[str, str]) -> dict[str, Any]:
+    def _summary(
+        self, reports: list[dict[str, Any]], recommendation: dict[str, str]
+    ) -> dict[str, Any]:
         passed = sum(1 for report in reports if report["status"] == "PASS")
         warning = sum(1 for report in reports if report["status"] == "WARNING")
         failed = sum(1 for report in reports if report["status"] == "FAIL")
-        overall = round(sum(float(report["quality_score"]) for report in reports) / len(reports), 2) if reports else 0.0
+        overall = (
+            round(
+                sum(float(report["quality_score"]) for report in reports)
+                / len(reports),
+                2,
+            )
+            if reports
+            else 0.0
+        )
         return {
             "pipeline_run_id": get_pipeline_run_id(),
             "datasets": len(reports),
@@ -54,7 +66,9 @@ class ValidationReportGenerator:
             "recommendation": recommendation,
         }
 
-    def _dashboard_summary(self, reports: list[dict[str, Any]], summary: dict[str, Any]) -> dict[str, Any]:
+    def _dashboard_summary(
+        self, reports: list[dict[str, Any]], summary: dict[str, Any]
+    ) -> dict[str, Any]:
         return {
             "pipeline_run_id": get_pipeline_run_id(),
             "overall_quality": summary["overall_quality"],
@@ -71,7 +85,16 @@ class ValidationReportGenerator:
         }
 
     def _write_csv(self, path: Path, reports: list[dict[str, Any]]) -> None:
-        fieldnames = ["Dataset", "Rows", "Columns", "Errors", "Warnings", "Quality Score", "Status", "Execution Time"]
+        fieldnames = [
+            "Dataset",
+            "Rows",
+            "Columns",
+            "Errors",
+            "Warnings",
+            "Quality Score",
+            "Status",
+            "Execution Time",
+        ]
         with path.open("w", encoding="utf-8", newline="") as file_obj:
             writer = csv.DictWriter(file_obj, fieldnames=fieldnames)
             writer.writeheader()
@@ -89,7 +112,9 @@ class ValidationReportGenerator:
                     }
                 )
 
-    def _write_html(self, path: Path, reports: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+    def _write_html(
+        self, path: Path, reports: list[dict[str, Any]], summary: dict[str, Any]
+    ) -> None:
         rows = "\n".join(
             "<tr>"
             f"<td>{html.escape(report['dataset'])}</td>"
@@ -159,4 +184,3 @@ class ValidationReportGenerator:
             for issue in issues[:10]
         )
         return f"<div class='issues'><h3>{html.escape(report['dataset'])}</h3><ul>{items}</ul></div>"
-

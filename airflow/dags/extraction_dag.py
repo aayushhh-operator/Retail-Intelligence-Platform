@@ -2,8 +2,10 @@
 
 import sys
 from pathlib import Path
-from airflow import DAG
+
 from airflow.operators.empty import EmptyOperator
+
+from airflow import DAG
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -13,13 +15,13 @@ from airflow.config.dag_settings import DEFAULT_ARGS
 from airflow.plugins.operators.extraction_operator import ExtractionOperator
 
 with DAG(
-    dag_id='extraction_dag',
+    dag_id="extraction_dag",
     default_args=DEFAULT_ARGS,
     schedule_interval=None,
     catchup=False,
 ) as dag:
-    start = EmptyOperator(task_id='start')
-    run_task = ExtractionOperator(task_id='run_extraction')
-    end = EmptyOperator(task_id='end')
-    
+    start = EmptyOperator(task_id="start")
+    run_task = ExtractionOperator(task_id="run_extraction")
+    end = EmptyOperator(task_id="end")
+
     start >> run_task >> end

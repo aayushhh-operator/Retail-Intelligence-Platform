@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from data_generator import config
-from data_generator.utils import choose_issue_indexes, create_faker, format_date, make_id
+from data_generator.utils import (choose_issue_indexes, create_faker,
+                                  format_date, make_id)
 
 REVIEW_FIELDS = (
     "review_id",
@@ -48,7 +49,9 @@ def generate_reviews(
     for index, order in enumerate(selected_orders, start=1):
         delivery_date = delivery_by_order[str(order["order_id"])]
         review_date = delivery_date + timedelta(days=rng.randint(1, 45))
-        rating = rng.choices((1, 2, 3, 4, 5), weights=(0.04, 0.06, 0.15, 0.35, 0.40), k=1)[0]
+        rating = rng.choices(
+            (1, 2, 3, 4, 5), weights=(0.04, 0.06, 0.15, 0.35, 0.40), k=1
+        )[0]
         row = {
             "review_id": make_id("REV", index),
             "customer_id": order["customer_id"],
@@ -66,4 +69,3 @@ def generate_reviews(
         rows.append(row)
 
     return rows
-

@@ -10,25 +10,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from config.constants import (
-    AI_DIR,
-    AIRFLOW_DIR,
-    CONFIG_DIR,
-    DASHBOARD_DIR,
-    DATA_DIR,
-    DOCS_DIR,
-    EXTRACT_DIR,
-    LOAD_DIR,
-    LOGS_DIR,
-    SCRIPTS_DIR,
-    SPARK_DIR,
-    SQL_DIR,
-    TESTS_DIR,
-    TRANSFORM_DIR,
-    VALIDATE_DIR,
-    WAREHOUSE_DIR,
-)
-
+from config.constants import (AI_DIR, AIRFLOW_DIR, CONFIG_DIR, DASHBOARD_DIR,
+                              DATA_DIR, DOCS_DIR, EXTRACT_DIR, LOAD_DIR,
+                              LOGS_DIR, SCRIPTS_DIR, SPARK_DIR, SQL_DIR,
+                              TESTS_DIR, TRANSFORM_DIR, VALIDATE_DIR,
+                              WAREHOUSE_DIR)
 
 REQUIRED_DIRECTORIES = (
     CONFIG_DIR,

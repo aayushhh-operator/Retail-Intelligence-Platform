@@ -13,7 +13,8 @@ from config.logging_config import configure_logging
 from config.pipeline_run import get_pipeline_run_id, set_pipeline_run_id
 from config.settings import settings
 from extract.metadata import ExtractionMetadata, write_manifest, write_metadata
-from extract.registry import ExtractorRegistry, build_default_registry, default_sources
+from extract.registry import (ExtractorRegistry, build_default_registry,
+                              default_sources)
 
 
 def run_ingestion(
@@ -58,4 +59,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

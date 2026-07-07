@@ -6,14 +6,9 @@ import random
 from typing import Any
 
 from data_generator import config
-from data_generator.utils import (
-    add_duplicate_rows,
-    choose_issue_indexes,
-    create_faker,
-    format_date,
-    make_id,
-    random_date_between,
-)
+from data_generator.utils import (add_duplicate_rows, choose_issue_indexes,
+                                  create_faker, format_date, make_id,
+                                  random_date_between)
 
 CUSTOMER_FIELDS = (
     "customer_id",
@@ -56,7 +51,9 @@ def generate_customers(rng: random.Random) -> list[dict[str, Any]]:
             "email": fake.unique.email(),
             "phone": fake.phone_number(),
             "gender": gender,
-            "date_of_birth": format_date(fake.date_of_birth(minimum_age=18, maximum_age=75)),
+            "date_of_birth": format_date(
+                fake.date_of_birth(minimum_age=18, maximum_age=75)
+            ),
             "city": fake.city(),
             "state": fake.state(),
             "country": "India",
@@ -67,7 +64,15 @@ def generate_customers(rng: random.Random) -> list[dict[str, Any]]:
         }
 
         if index - 1 in issue_indexes:
-            issue_type = rng.choice(("missing_email", "invalid_email", "null_phone", "missing_id", "bad_zip"))
+            issue_type = rng.choice(
+                (
+                    "missing_email",
+                    "invalid_email",
+                    "null_phone",
+                    "missing_id",
+                    "bad_zip",
+                )
+            )
             if issue_type == "missing_email":
                 row["email"] = ""
             elif issue_type == "invalid_email":
@@ -83,4 +88,3 @@ def generate_customers(rng: random.Random) -> list[dict[str, Any]]:
 
     add_duplicate_rows(rng, rows)
     return rows
-

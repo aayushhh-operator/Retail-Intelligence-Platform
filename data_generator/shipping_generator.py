@@ -61,4 +61,3 @@ def generate_shipping(
         )
 
     return rows
-

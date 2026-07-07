@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from extract.extractor import BaseExtractor, ExtractedPayload, require_existing_file
+from extract.extractor import (BaseExtractor, ExtractedPayload,
+                               require_existing_file)
 from extract.utils import copy_file
 
 
@@ -57,9 +58,10 @@ def inspect_json(path: Path) -> tuple[int | None, list[str], str]:
         return rows, sorted(columns), "ndjson"
 
     if isinstance(payload, list):
-        columns = sorted({key for item in payload if isinstance(item, dict) for key in item})
+        columns = sorted(
+            {key for item in payload if isinstance(item, dict) for key in item}
+        )
         return len(payload), columns, "json"
     if isinstance(payload, dict):
         return 1, sorted(payload.keys()), "json"
     return 1, [], "json"
-

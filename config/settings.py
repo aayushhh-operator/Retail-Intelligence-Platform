@@ -9,9 +9,11 @@ from pathlib import Path
 try:
     from dotenv import load_dotenv
 except ImportError:  # pragma: no cover - dependency is installed in later setup.
+
     def load_dotenv() -> None:
         """Fallback used before project dependencies are installed."""
         return None
+
 
 load_dotenv()
 
@@ -71,30 +73,33 @@ class ValidationSettings:
     # Maximum allowed missing value percentage before flagging as WARNING
     max_missing_percentage: float = float(_get_env("VALIDATION_MAX_MISSING_PCT", "20"))
     # Maximum allowed duplicate row percentage before flagging as WARNING
-    max_duplicate_percentage: float = float(_get_env("VALIDATION_MAX_DUPLICATE_PCT", "5"))
+    max_duplicate_percentage: float = float(
+        _get_env("VALIDATION_MAX_DUPLICATE_PCT", "5")
+    )
     # IQR multiplier for outlier detection (standard = 1.5)
     outlier_iqr_multiplier: float = float(_get_env("VALIDATION_OUTLIER_IQR", "1.5"))
 
 
 @dataclass(frozen=True)
-class FutureAISettings:
-    """Placeholders for future AI assistant configuration."""
+class AISettings:
+    """AI assistant configuration."""
 
+    groq_api_key: str = _get_env("GROQ_API_KEY", "")
     openai_api_key: str = _get_env("OPENAI_API_KEY", "")
-    model: str = _get_env("AI_MODEL", "")
+    model: str = _get_env("AI_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
 
 
 @dataclass(frozen=True)
-class FutureAirflowSettings:
-    """Placeholders for future Airflow configuration."""
+class AirflowSettings:
+    """Airflow orchestration configuration."""
 
     airflow_home: str = _get_env("AIRFLOW_HOME", "")
     dag_dir: str = _get_env("AIRFLOW_DAG_DIR", "airflow")
 
 
 @dataclass(frozen=True)
-class FutureSparkSettings:
-    """Placeholders for future Spark configuration."""
+class SparkSettings:
+    """Spark distributed processing configuration."""
 
     master_url: str = _get_env("SPARK_MASTER_URL", "")
     app_name: str = _get_env("SPARK_APP_NAME", "RetailIntelligencePlatform")
@@ -108,9 +113,9 @@ class Settings:
     directories: DirectorySettings = DirectorySettings()
     logging: LoggingSettings = LoggingSettings()
     validation: ValidationSettings = ValidationSettings()
-    ai: FutureAISettings = FutureAISettings()
-    airflow: FutureAirflowSettings = FutureAirflowSettings()
-    spark: FutureSparkSettings = FutureSparkSettings()
+    ai: AISettings = AISettings()
+    airflow: AirflowSettings = AirflowSettings()
+    spark: SparkSettings = SparkSettings()
 
 
 settings = Settings()

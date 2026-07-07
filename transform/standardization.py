@@ -40,4 +40,3 @@ def integer(value: Any) -> int | None:
 def standard_date(value: Any) -> str:
     """Normalize date values to YYYY-MM-DD."""
     return iso_date(value)
-

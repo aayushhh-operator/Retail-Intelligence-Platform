@@ -86,8 +86,14 @@ class TransformationPipelineRunner:
         for dataset_name, filename, primary_key in dataset_definitions:
             raw_path = self.raw_dir / filename
             if not raw_path.is_file():
-                self.logger.warning("%s | raw file not found: %s — skipping", dataset_name, raw_path)
-                skipped = TransformationMetrics(dataset=dataset_name, status="SKIPPED", error_message=f"Raw file not found: {raw_path}")
+                self.logger.warning(
+                    "%s | raw file not found: %s — skipping", dataset_name, raw_path
+                )
+                skipped = TransformationMetrics(
+                    dataset=dataset_name,
+                    status="SKIPPED",
+                    error_message=f"Raw file not found: {raw_path}",
+                )
                 all_metrics.append(skipped)
                 continue
 

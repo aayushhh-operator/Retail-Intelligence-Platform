@@ -1,14 +1,17 @@
 """Database utilities for the analytics layer."""
 
+import logging
+from contextlib import contextmanager
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, Session
-from contextlib import contextmanager
-from analytics.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-import logging
+from sqlalchemy.orm import Session, sessionmaker
+
+from analytics.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
 logger = logging.getLogger(__name__)
+
 
 class AnalyticsDBManager:
     """Manages connections and raw SQL execution for the analytics schema."""
@@ -16,7 +19,9 @@ class AnalyticsDBManager:
     def __init__(self):
         self.dsn = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         self.engine = create_engine(self.dsn)
-        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.SessionLocal = sessionmaker(
+            autocommit=False, autoflush=False, bind=self.engine
+        )
 
     @contextmanager
     def transaction(self) -> Session:

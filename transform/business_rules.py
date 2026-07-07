@@ -31,13 +31,25 @@ def apply_business_rules(
     return handler(rows, config, metrics)
 
 
-def _customers(rows: list[dict[str, Any]], _config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
-    output = [row for row in rows if row.get("customer_id") and row.get("first_name") and row.get("last_name")]
+def _customers(
+    rows: list[dict[str, Any]],
+    _config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
+    output = [
+        row
+        for row in rows
+        if row.get("customer_id") and row.get("first_name") and row.get("last_name")
+    ]
     metrics.rows_dropped += len(rows) - len(output)
     return output
 
 
-def _products(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
+def _products(
+    rows: list[dict[str, Any]],
+    config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
     output = []
     for row in rows:
         price = to_float(row.get("selling_price") or row.get("price"))
@@ -58,13 +70,22 @@ def _products(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: T
     return output
 
 
-def _orders(rows: list[dict[str, Any]], _config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
+def _orders(
+    rows: list[dict[str, Any]],
+    _config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
     output = []
     for row in rows:
         quantity = to_int(row.get("quantity"))
         amount = to_float(row.get("total_amount"))
         unit_price = to_float(row.get("unit_price"))
-        if not row.get("customer_id") or not row.get("product_id") or quantity is None or quantity <= 0:
+        if (
+            not row.get("customer_id")
+            or not row.get("product_id")
+            or quantity is None
+            or quantity <= 0
+        ):
             metrics.rows_dropped += 1
             continue
         if amount is None or amount <= 0 or unit_price is None or unit_price <= 0:
@@ -74,7 +95,11 @@ def _orders(rows: list[dict[str, Any]], _config: BusinessRuleConfig, metrics: Tr
     return output
 
 
-def _inventory(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
+def _inventory(
+    rows: list[dict[str, Any]],
+    config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
     output = []
     for row in rows:
         stock = to_int(row.get("current_stock"))
@@ -92,7 +117,11 @@ def _inventory(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: 
     return output
 
 
-def _reviews(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
+def _reviews(
+    rows: list[dict[str, Any]],
+    config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
     output = []
     for row in rows:
         rating = to_int(row.get("rating"))
@@ -110,13 +139,25 @@ def _reviews(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: Tr
     return output
 
 
-def _payments(rows: list[dict[str, Any]], _config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
-    output = [row for row in rows if to_float(row.get("amount")) is not None and to_float(row.get("amount")) > 0]
+def _payments(
+    rows: list[dict[str, Any]],
+    _config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
+    output = [
+        row
+        for row in rows
+        if to_float(row.get("amount")) is not None and to_float(row.get("amount")) > 0
+    ]
     metrics.rows_dropped += len(rows) - len(output)
     return output
 
 
-def _shipping(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: TransformationMetrics) -> list[dict[str, Any]]:
+def _shipping(
+    rows: list[dict[str, Any]],
+    config: BusinessRuleConfig,
+    metrics: TransformationMetrics,
+) -> list[dict[str, Any]]:
     output = []
     for row in rows:
         dispatch = parse_date(row.get("dispatch_date"))
@@ -130,4 +171,3 @@ def _shipping(rows: list[dict[str, Any]], config: BusinessRuleConfig, metrics: T
                 continue
         output.append(row)
     return output
-

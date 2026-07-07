@@ -7,7 +7,8 @@ from datetime import timedelta
 from typing import Any
 
 from data_generator import config
-from data_generator.utils import choose_issue_indexes, format_date, make_id, money, random_date_between, weighted_choice
+from data_generator.utils import (choose_issue_indexes, format_date, make_id,
+                                  money, random_date_between, weighted_choice)
 
 ORDER_FIELDS = (
     "order_id",
@@ -34,7 +35,9 @@ STATUS_WEIGHTS = {
 }
 
 
-def build_product_popularity(rng: random.Random, products: list[dict[str, Any]]) -> dict[str, float]:
+def build_product_popularity(
+    rng: random.Random, products: list[dict[str, Any]]
+) -> dict[str, float]:
     """Create stable product popularity weights for realistic repeat purchases."""
     return {
         str(product["product_id"]): rng.uniform(0.5, 5.0)
@@ -50,10 +53,14 @@ def generate_orders(
     product_popularity: dict[str, float],
 ) -> list[dict[str, Any]]:
     """Generate order records with realistic purchasing behavior."""
-    customer_ids = [str(row["customer_id"]) for row in customers if row.get("customer_id")]
+    customer_ids = [
+        str(row["customer_id"]) for row in customers if row.get("customer_id")
+    ]
     active_products = [row for row in products if row.get("product_id")]
     product_ids = [str(row["product_id"]) for row in active_products]
-    product_weights = [product_popularity.get(product_id, 1.0) for product_id in product_ids]
+    product_weights = [
+        product_popularity.get(product_id, 1.0) for product_id in product_ids
+    ]
     product_by_id = {str(row["product_id"]): row for row in active_products}
     statuses = tuple(STATUS_WEIGHTS.keys())
     status_weights = tuple(STATUS_WEIGHTS.values())
@@ -63,7 +70,9 @@ def generate_orders(
     for index in range(1, config.NUMBER_OF_ORDERS + 1):
         product_id = weighted_choice(rng, product_ids, product_weights)
         product = product_by_id[product_id]
-        quantity = rng.choices((1, 2, 3, 4, 5), weights=(0.55, 0.22, 0.12, 0.07, 0.04), k=1)[0]
+        quantity = rng.choices(
+            (1, 2, 3, 4, 5), weights=(0.55, 0.22, 0.12, 0.07, 0.04), k=1
+        )[0]
         unit_price = float(product["selling_price"])
         discount = round(rng.uniform(0, 0.40), 2)
         tax = money(unit_price * quantity * 0.18)
@@ -89,9 +98,18 @@ def generate_orders(
         }
 
         if index - 1 in issue_indexes:
-            issue_type = rng.choice(("future_date", "duplicate_id", "negative_quantity", "missing_product_id"))
+            issue_type = rng.choice(
+                (
+                    "future_date",
+                    "duplicate_id",
+                    "negative_quantity",
+                    "missing_product_id",
+                )
+            )
             if issue_type == "future_date":
-                row["order_date"] = format_date(config.END_DATE + timedelta(days=rng.randint(1, 365)))
+                row["order_date"] = format_date(
+                    config.END_DATE + timedelta(days=rng.randint(1, 365))
+                )
             elif issue_type == "duplicate_id" and rows:
                 row["order_id"] = rows[-1]["order_id"]
             elif issue_type == "negative_quantity":
@@ -111,4 +129,3 @@ def _shipping_cost_for_category(rng: random.Random, category: str) -> float:
     if category in {"Books", "Beauty", "Groceries"}:
         return money(rng.uniform(2.0, 12.0))
     return money(rng.uniform(4.0, 20.0))
-

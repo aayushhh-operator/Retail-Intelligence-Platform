@@ -15,4 +15,3 @@ class JSONValidator(BaseValidator):
         """Load JSON records from raw storage."""
         require_dataset(self.dataset_config.path)
         return normalize_records(read_json_payload(self.dataset_config.path))
-

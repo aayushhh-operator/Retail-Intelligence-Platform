@@ -1,5 +1,7 @@
 """Format SQL Results."""
+
 import pandas as pd
+
 
 def format_dataframe(df: pd.DataFrame) -> str:
     if df.empty:

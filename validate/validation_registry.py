@@ -24,9 +24,13 @@ class ValidationRegistry:
         """Register a validator class."""
         self._validators[file_type.upper()] = validator_class
 
-    def create(self, dataset_config: DatasetConfig, logger: logging.Logger) -> BaseValidator:
+    def create(
+        self, dataset_config: DatasetConfig, logger: logging.Logger
+    ) -> BaseValidator:
         """Create a validator instance for a dataset config."""
-        return self._validators[dataset_config.file_type.upper()](dataset_config, logger)
+        return self._validators[dataset_config.file_type.upper()](
+            dataset_config, logger
+        )
 
     def supported_types(self) -> tuple[str, ...]:
         """Return supported file types."""
@@ -54,4 +58,3 @@ def default_datasets() -> list[DatasetConfig]:
         DatasetConfig("shipping", raw_dir / "shipping.csv", "CSV", "shipping_id"),
         DatasetConfig("website_events", raw_dir / "website_events.json", "JSON", None),
     ]
-

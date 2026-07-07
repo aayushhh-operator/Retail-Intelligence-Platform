@@ -56,4 +56,3 @@ def blank_to_none(rows: list[dict[str, Any]]) -> int:
         if changed:
             affected += 1
     return affected
-

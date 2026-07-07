@@ -59,7 +59,9 @@ def run_transformation(
     list[TransformationMetrics]
         One ``TransformationMetrics`` instance per dataset attempted.
     """
-    active_run_id = set_pipeline_run_id(pipeline_run_id or _pipeline_run_id_from_validation())
+    active_run_id = set_pipeline_run_id(
+        pipeline_run_id or _pipeline_run_id_from_validation()
+    )
     logger = configure_logging(pipeline_run_id=active_run_id)
     logger.info("Transformation started pipeline_run_id=%s", active_run_id)
 
@@ -95,11 +97,15 @@ def _pipeline_run_id_from_validation() -> str | None:
     """Reuse the pipeline run ID from validation summary when available."""
     import json
 
-    summary_path = Path(settings.directories.log_dir) / "validation" / "validation_summary.json"
+    summary_path = (
+        Path(settings.directories.log_dir) / "validation" / "validation_summary.json"
+    )
     if not summary_path.is_file():
         return None
     try:
-        return json.loads(summary_path.read_text(encoding="utf-8")).get("pipeline_run_id")
+        return json.loads(summary_path.read_text(encoding="utf-8")).get(
+            "pipeline_run_id"
+        )
     except (json.JSONDecodeError, OSError):
         return None
 

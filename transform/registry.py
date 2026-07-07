@@ -10,14 +10,9 @@ from typing import Any, Type
 
 from transform.base_transformer import BaseTransformer
 from transform.config import TRANSFORMATION_CONFIG, TransformationConfig
-from transform.normalization import (
-    normalize_category,
-    normalize_country,
-    normalize_phone,
-    normalize_zipcode,
-)
+from transform.normalization import (normalize_category, normalize_country,
+                                     normalize_phone, normalize_zipcode)
 from transform.standardization import integer, title_case
-
 
 # ---------------------------------------------------------------------------
 # Concrete dataset transformers
@@ -179,7 +174,10 @@ class WebsiteEventsTransformer(BaseTransformer):
         except json.JSONDecodeError:
             payload = [json.loads(line) for line in text.splitlines() if line.strip()]
         if isinstance(payload, list):
-            return [_flatten_dict(item) if isinstance(item, dict) else {"value": item} for item in payload]
+            return [
+                _flatten_dict(item) if isinstance(item, dict) else {"value": item}
+                for item in payload
+            ]
         return [_flatten_dict(payload)] if isinstance(payload, dict) else []
 
     def transform(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

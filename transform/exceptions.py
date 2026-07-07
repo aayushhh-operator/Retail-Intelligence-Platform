@@ -5,4 +5,3 @@ from __future__ import annotations
 
 class TransformationError(Exception):
     """Raised when a dataset cannot be transformed."""
-

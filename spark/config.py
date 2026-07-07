@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +26,7 @@ JDBC_URL = f"jdbc:postgresql://{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 JDBC_PROPERTIES = {
     "user": DATABASE_USER,
     "password": DATABASE_PASSWORD,
-    "driver": "org.postgresql.Driver"
+    "driver": "org.postgresql.Driver",
 }
 
 # Path Settings

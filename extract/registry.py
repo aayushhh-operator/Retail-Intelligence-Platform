@@ -53,13 +53,27 @@ def default_sources() -> list[SourceConfig]:
     """Return Phase 2 source definitions."""
     source_dir = Path(settings.directories.source_data_dir)
     return [
-        SourceConfig("customers", "CSV", str(source_dir / "customers.csv"), "customers.csv"),
-        SourceConfig("inventory", "CSV", str(source_dir / "inventory.csv"), "inventory.csv"),
+        SourceConfig(
+            "customers", "CSV", str(source_dir / "customers.csv"), "customers.csv"
+        ),
+        SourceConfig(
+            "inventory", "CSV", str(source_dir / "inventory.csv"), "inventory.csv"
+        ),
         SourceConfig("orders", "CSV", str(source_dir / "orders.csv"), "orders.csv"),
-        SourceConfig("payments", "CSV", str(source_dir / "payments.csv"), "payments.csv"),
+        SourceConfig(
+            "payments", "CSV", str(source_dir / "payments.csv"), "payments.csv"
+        ),
         SourceConfig("reviews", "CSV", str(source_dir / "reviews.csv"), "reviews.csv"),
-        SourceConfig("shipping", "CSV", str(source_dir / "shipping.csv"), "shipping.csv"),
-        SourceConfig("products", "API", "https://fakestoreapi.com/products", "products.csv"),
-        SourceConfig("website_events", "JSON", str(source_dir / "website_events.json"), "website_events.json"),
+        SourceConfig(
+            "shipping", "CSV", str(source_dir / "shipping.csv"), "shipping.csv"
+        ),
+        SourceConfig(
+            "products", "API", "https://fakestoreapi.com/products", "products.csv"
+        ),
+        SourceConfig(
+            "website_events",
+            "JSON",
+            str(source_dir / "website_events.json"),
+            "website_events.json",
+        ),
     ]
-

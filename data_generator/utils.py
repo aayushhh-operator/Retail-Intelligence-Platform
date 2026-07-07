@@ -93,7 +93,9 @@ def add_duplicate_rows(
         rows.append(dict(row))
 
 
-def write_csv(path: Path, rows: Iterable[dict[str, Any]], fieldnames: Sequence[str]) -> int:
+def write_csv(
+    path: Path, rows: Iterable[dict[str, Any]], fieldnames: Sequence[str]
+) -> int:
     """Write dictionaries to CSV and return the number of rows written."""
     path.parent.mkdir(parents=True, exist_ok=True)
     count = 0
@@ -121,6 +123,7 @@ def format_date(value: date | datetime) -> str:
 def write_json(path: Path, rows: Iterable[dict[str, Any]]) -> int:
     """Write dictionaries to JSON and return the number of rows written."""
     import json
+
     path.parent.mkdir(parents=True, exist_ok=True)
     count = 0
     data = []
@@ -130,4 +133,3 @@ def write_json(path: Path, rows: Iterable[dict[str, Any]]) -> int:
     with path.open("w", encoding="utf-8") as json_file:
         json.dump(data, json_file, indent=2)
     return count
-

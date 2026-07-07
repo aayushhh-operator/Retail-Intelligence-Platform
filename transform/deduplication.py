@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 
-def remove_exact_duplicates(rows: list[dict[str, Any]], keep: str = "first") -> tuple[list[dict[str, Any]], int]:
+def remove_exact_duplicates(
+    rows: list[dict[str, Any]], keep: str = "first"
+) -> tuple[list[dict[str, Any]], int]:
     """Remove exact duplicate rows."""
     ordered = rows if keep == "first" else list(reversed(rows))
     seen: set[tuple[tuple[str, str], ...]] = set()
@@ -45,4 +47,3 @@ def remove_primary_key_duplicates(
     if keep != "first":
         output.reverse()
     return output, len(rows) - len(output)
-

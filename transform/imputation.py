@@ -9,7 +9,9 @@ from typing import Any
 from transform.utils import to_float
 
 
-def impute_rows(rows: list[dict[str, Any]], strategies: dict[str, str]) -> tuple[list[dict[str, Any]], int]:
+def impute_rows(
+    rows: list[dict[str, Any]], strategies: dict[str, str]
+) -> tuple[list[dict[str, Any]], int]:
     """Apply configured column imputation strategies."""
     imputed_rows = 0
     for column, strategy in strategies.items():
@@ -43,4 +45,3 @@ def _replacement(rows: list[dict[str, Any]], column: str, strategy: str) -> Any:
     if strategy == "median" and numeric:
         return median(numeric)
     return None
-

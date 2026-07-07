@@ -51,7 +51,9 @@ def test_csv_extraction(tmp_path: Path) -> None:
     assert metadata.pipeline_run_id == "RUN_20260706_143522"
     assert metadata.rows == 1
     assert metadata.columns == ["customer_id", "email"]
-    assert (tmp_path / "raw" / "customers.csv").read_text(encoding="utf-8") == source.read_text(encoding="utf-8")
+    assert (tmp_path / "raw" / "customers.csv").read_text(
+        encoding="utf-8"
+    ) == source.read_text(encoding="utf-8")
 
 
 def test_json_extraction(tmp_path: Path) -> None:
@@ -75,7 +77,9 @@ def test_api_extraction(tmp_path: Path) -> None:
     """API extraction should save raw API JSON responses."""
     payload = b'[{"id": 1, "title": "Bag"}]'
     extractor = APIExtractor(
-        SourceConfig("products", "API", "https://example.test/products", "products.json"),
+        SourceConfig(
+            "products", "API", "https://example.test/products", "products.json"
+        ),
         tmp_path / "raw",
         NullLogger(),  # type: ignore[arg-type]
     )
@@ -107,10 +111,18 @@ def test_metadata_and_manifest_include_pipeline_run_id(tmp_path: Path) -> None:
     )
 
     metadata_path = write_metadata(metadata, tmp_path / "metadata")
-    manifest_path = write_manifest("RUN_20260706_143522", [metadata], tmp_path / "ingestion_manifest.json")
+    manifest_path = write_manifest(
+        "RUN_20260706_143522", [metadata], tmp_path / "ingestion_manifest.json"
+    )
 
-    assert json.loads(metadata_path.read_text(encoding="utf-8"))["pipeline_run_id"] == "RUN_20260706_143522"
-    assert json.loads(manifest_path.read_text(encoding="utf-8"))["pipeline_run_id"] == "RUN_20260706_143522"
+    assert (
+        json.loads(metadata_path.read_text(encoding="utf-8"))["pipeline_run_id"]
+        == "RUN_20260706_143522"
+    )
+    assert (
+        json.loads(manifest_path.read_text(encoding="utf-8"))["pipeline_run_id"]
+        == "RUN_20260706_143522"
+    )
 
 
 def test_registry_supports_expected_source_types() -> None:

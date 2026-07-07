@@ -42,10 +42,11 @@ def generate_inventory(
                 "warehouse": warehouse,
                 "current_stock": adjusted_stock,
                 "reorder_level": rng.randint(20, 150),
-                "last_updated": format_date(random_date_between(rng, config.START_DATE, config.END_DATE)),
+                "last_updated": format_date(
+                    random_date_between(rng, config.START_DATE, config.END_DATE)
+                ),
                 "warehouse_city": city,
             }
         )
 
     return rows
-

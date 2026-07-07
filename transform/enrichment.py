@@ -28,7 +28,9 @@ def _customers(rows: list[dict[str, Any]]) -> int:
         birth_date = parse_date(row.get("date_of_birth"))
         signup_date = parse_date(row.get("signup_date"))
         row["customer_age"] = today.year - birth_date.year if birth_date else None
-        row["customer_tenure_days"] = (today - signup_date).days if signup_date else None
+        row["customer_tenure_days"] = (
+            (today - signup_date).days if signup_date else None
+        )
     return len(rows)
 
 
@@ -78,4 +80,3 @@ def _products(rows: list[dict[str, Any]]) -> int:
         else:
             row["profit"] = None
     return len(rows)
-

@@ -15,4 +15,3 @@ class CSVValidator(BaseValidator):
         """Load CSV records from raw storage."""
         require_dataset(self.dataset_config.path)
         return read_csv_rows(self.dataset_config.path)
-

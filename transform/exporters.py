@@ -49,4 +49,3 @@ def export_summary(report_dir: Path, metrics: list[TransformationMetrics]) -> Pa
     }
     write_json(path, payload)
     return path
-

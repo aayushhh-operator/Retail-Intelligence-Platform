@@ -21,18 +21,26 @@ def generate_statistics(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "column_names": columns,
         "memory_usage_bytes": getsizeof(rows) + sum(getsizeof(row) for row in rows),
         "duplicate_rows": duplicate_count,
-        "duplicate_percentage": round((duplicate_count / row_count * 100), 2) if row_count else 0.0,
+        "duplicate_percentage": (
+            round((duplicate_count / row_count * 100), 2) if row_count else 0.0
+        ),
         "columns_profile": {},
     }
 
     for column in columns:
         values = [row.get(column) for row in rows]
         non_blank = [value for value in values if not is_blank(value)]
-        numeric_values = [number for value in non_blank if (number := to_float(value)) is not None]
+        numeric_values = [
+            number for value in non_blank if (number := to_float(value)) is not None
+        ]
         counter = Counter(str(value) for value in non_blank)
         column_profile: dict[str, Any] = {
             "missing_count": row_count - len(non_blank),
-            "missing_percentage": round(((row_count - len(non_blank)) / row_count * 100), 2) if row_count else 0.0,
+            "missing_percentage": (
+                round(((row_count - len(non_blank)) / row_count * 100), 2)
+                if row_count
+                else 0.0
+            ),
             "unique_values": len(counter),
             "top_categories": counter.most_common(5),
         }
@@ -69,7 +77,9 @@ def _numeric_stats(values: list[float]) -> dict[str, Any]:
 
     counts = Counter(sorted_values)
     highest_frequency = max(counts.values())
-    mode_value = next(value for value, count in counts.items() if count == highest_frequency)
+    mode_value = next(
+        value for value, count in counts.items() if count == highest_frequency
+    )
     variance = (
         sum((value - average) ** 2 for value in sorted_values) / (value_count - 1)
         if value_count > 1
@@ -82,5 +92,5 @@ def _numeric_stats(values: list[float]) -> dict[str, Any]:
         "mean": round(average, 4),
         "median": round(median_value, 4),
         "mode": mode_value,
-        "standard_deviation": round(variance ** 0.5, 4),
+        "standard_deviation": round(variance**0.5, 4),
     }

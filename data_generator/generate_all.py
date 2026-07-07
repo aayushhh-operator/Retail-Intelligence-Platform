@@ -10,18 +10,25 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from data_generator import config
-from data_generator.customer_generator import CUSTOMER_FIELDS, generate_customers
-from data_generator.inventory_generator import INVENTORY_FIELDS, generate_inventory
-from data_generator.order_generator import ORDER_FIELDS, build_product_popularity, generate_orders
+from data_generator.customer_generator import (CUSTOMER_FIELDS,
+                                               generate_customers)
+from data_generator.inventory_generator import (INVENTORY_FIELDS,
+                                                generate_inventory)
+from data_generator.order_generator import (ORDER_FIELDS,
+                                            build_product_popularity,
+                                            generate_orders)
 from data_generator.payment_generator import PAYMENT_FIELDS, generate_payments
 from data_generator.product_generator import PRODUCT_FIELDS, generate_products
 from data_generator.review_generator import REVIEW_FIELDS, generate_reviews
-from data_generator.shipping_generator import SHIPPING_FIELDS, generate_shipping
-from data_generator.website_events_generator import generate_website_events
+from data_generator.shipping_generator import (SHIPPING_FIELDS,
+                                               generate_shipping)
 from data_generator.utils import seed_random, write_csv, write_json
+from data_generator.website_events_generator import generate_website_events
 
 
-def _save_dataset(file_name: str, rows: list[dict[str, object]], fields: tuple[str, ...]) -> None:
+def _save_dataset(
+    file_name: str, rows: list[dict[str, object]], fields: tuple[str, ...]
+) -> None:
     """Save one generated dataset to the configured source directory."""
     output_path = config.OUTPUT_DIRECTORY / file_name
     print(f"Saving {file_name}...")
@@ -89,4 +96,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

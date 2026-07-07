@@ -2,14 +2,17 @@
 
 import logging
 from contextlib import contextmanager
+
 from sqlalchemy.orm import Session
+
 from warehouse.connection import DatabaseConnection
 
 logger = logging.getLogger(__name__)
 
+
 class TransactionManager:
     """Provides a context manager for transactional safety."""
-    
+
     def __init__(self, connection: DatabaseConnection):
         self.connection = connection
 

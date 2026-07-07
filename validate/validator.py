@@ -83,4 +83,3 @@ def calculate_quality_score(row_count: int, issues: list[ValidationIssue]) -> fl
     denominator = row_count * max(1, len(issues))
     score = max(0.0, 100.0 - (weighted_impact / denominator * 100.0))
     return round(score, 2)
-

@@ -15,7 +15,9 @@ from config.logging_config import configure_logging
 from config.pipeline_run import get_pipeline_run_id, set_pipeline_run_id
 from config.settings import settings
 from validate.report_generator import ValidationReportGenerator
-from validate.validation_registry import ValidationRegistry, build_default_registry, default_datasets
+from validate.validation_registry import (ValidationRegistry,
+                                          build_default_registry,
+                                          default_datasets)
 
 
 def run_validation(
@@ -23,7 +25,9 @@ def run_validation(
     registry: ValidationRegistry | None = None,
 ) -> list[dict[str, Any]]:
     """Run validation for all configured raw datasets."""
-    active_run_id = set_pipeline_run_id(pipeline_run_id or _pipeline_run_id_from_manifest())
+    active_run_id = set_pipeline_run_id(
+        pipeline_run_id or _pipeline_run_id_from_manifest()
+    )
     logger = configure_logging(pipeline_run_id=active_run_id)
     logger.info("Validation started")
     active_registry = registry or build_default_registry()
@@ -37,7 +41,9 @@ def run_validation(
         reports.append(report)
 
     recommendation = _pipeline_recommendation(reports)
-    report_generator = ValidationReportGenerator(Path(settings.directories.log_dir) / "validation")
+    report_generator = ValidationReportGenerator(
+        Path(settings.directories.log_dir) / "validation"
+    )
     paths = report_generator.write_all(reports, recommendation)
     logger.info("Validation reports generated: %s", paths)
     logger.info("Validation completed")
@@ -50,7 +56,9 @@ def _pipeline_run_id_from_manifest() -> str | None:
     if not manifest_path.is_file():
         return None
     try:
-        return json.loads(manifest_path.read_text(encoding="utf-8")).get("pipeline_run_id")
+        return json.loads(manifest_path.read_text(encoding="utf-8")).get(
+            "pipeline_run_id"
+        )
     except json.JSONDecodeError:
         return None
 
@@ -83,7 +91,11 @@ def _product_ids(path: Path) -> set[str]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, list):
         return set()
-    return {str(item.get("id")) for item in payload if isinstance(item, dict) and item.get("id") is not None}
+    return {
+        str(item.get("id"))
+        for item in payload
+        if isinstance(item, dict) and item.get("id") is not None
+    }
 
 
 def _delivered_purchase_pairs(raw_dir: Path) -> set[str]:
@@ -104,7 +116,13 @@ def _delivered_purchase_pairs(raw_dir: Path) -> set[str]:
 def _pipeline_recommendation(reports: list[dict[str, Any]]) -> dict[str, str]:
     """Generate proceed/stop recommendation from dataset quality."""
     failed = [report["dataset"] for report in reports if report["status"] == "FAIL"]
-    overall = round(sum(float(report["quality_score"]) for report in reports) / len(reports), 2) if reports else 0.0
+    overall = (
+        round(
+            sum(float(report["quality_score"]) for report in reports) / len(reports), 2
+        )
+        if reports
+        else 0.0
+    )
     if failed or overall < 90:
         return {
             "decision": "Stop Pipeline",
@@ -123,4 +141,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

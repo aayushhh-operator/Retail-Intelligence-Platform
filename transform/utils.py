@@ -25,7 +25,10 @@ def read_json(path: Path) -> list[dict[str, Any]]:
     except json.JSONDecodeError:
         payload = [json.loads(line) for line in text.splitlines() if line.strip()]
     if isinstance(payload, list):
-        return [_flatten(item) if isinstance(item, dict) else {"value": item} for item in payload]
+        return [
+            _flatten(item) if isinstance(item, dict) else {"value": item}
+            for item in payload
+        ]
     if isinstance(payload, dict):
         return [_flatten(payload)]
     return [{"value": payload}]
@@ -101,4 +104,3 @@ def _flatten(record: dict[str, Any], prefix: str = "") -> dict[str, Any]:
         else:
             flattened[name] = value
     return flattened
-

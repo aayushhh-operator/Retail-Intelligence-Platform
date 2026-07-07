@@ -50,4 +50,3 @@ class TransformationConfig:
 
 
 TRANSFORMATION_CONFIG = TransformationConfig()
-

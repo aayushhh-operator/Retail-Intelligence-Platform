@@ -66,4 +66,3 @@ def write_manifest(
         encoding="utf-8",
     )
     return manifest_path
-

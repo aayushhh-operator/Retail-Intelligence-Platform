@@ -1,12 +1,14 @@
 """High-level Star Schema builder."""
 
 import logging
-from analytics.utils import AnalyticsDBManager
+
+from analytics.config import SQL_DIR
 from analytics.dim_builder import DimensionBuilder
 from analytics.fact_builder import FactBuilder
-from analytics.config import SQL_DIR
+from analytics.utils import AnalyticsDBManager
 
 logger = logging.getLogger(__name__)
+
 
 class StarSchemaBuilder:
     """Coordinates the building of the entire Star Schema."""

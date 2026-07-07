@@ -1,8 +1,11 @@
 """Safe SQL Executor."""
+
 import pandas as pd
 from sqlalchemy import create_engine, text
+
 from ai.config import DB_URI
 from ai.sql_validator import validate_sql
+
 
 def execute_sql(sql: str) -> pd.DataFrame:
     safe_sql = validate_sql(sql)

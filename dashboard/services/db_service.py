@@ -1,12 +1,16 @@
 """Database Connection Service."""
-import streamlit as st
+
 import pandas as pd
+import streamlit as st
 from sqlalchemy import create_engine, text
+
 from dashboard.config import DB_URI
+
 
 @st.cache_resource
 def get_engine():
     return create_engine(DB_URI)
+
 
 def execute_query(query: str, params: dict = None) -> pd.DataFrame:
     """Execute a read-only query and return a DataFrame."""

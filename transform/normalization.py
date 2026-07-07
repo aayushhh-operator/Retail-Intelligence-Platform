@@ -46,4 +46,3 @@ def normalize_category(value: Any) -> str:
     }
     text = str(value).strip()
     return mapping.get(text.lower(), text.title())
-

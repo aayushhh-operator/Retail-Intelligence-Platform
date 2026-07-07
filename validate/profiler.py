@@ -13,4 +13,3 @@ class DatasetProfiler:
     def profile(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
         """Return profiling statistics for loaded rows."""
         return generate_statistics(rows)
-

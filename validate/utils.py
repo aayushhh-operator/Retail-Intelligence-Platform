@@ -46,7 +46,10 @@ def flatten_record(record: dict[str, Any], prefix: str = "") -> dict[str, Any]:
 def normalize_records(payload: Any) -> list[dict[str, Any]]:
     """Normalize JSON payloads into a list of flattened dictionaries."""
     if isinstance(payload, list):
-        return [flatten_record(item) if isinstance(item, dict) else {"value": item} for item in payload]
+        return [
+            flatten_record(item) if isinstance(item, dict) else {"value": item}
+            for item in payload
+        ]
     if isinstance(payload, dict):
         return [flatten_record(payload)]
     return [{"value": payload}]
@@ -92,4 +95,3 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     """Write a JSON payload with deterministic formatting."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-

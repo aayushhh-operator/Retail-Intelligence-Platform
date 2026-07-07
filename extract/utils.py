@@ -41,4 +41,3 @@ def detect_csv_columns(path: Path) -> list[str]:
     with path.open("r", encoding="utf-8", newline="") as file_obj:
         reader = csv.reader(file_obj)
         return next(reader, [])
-

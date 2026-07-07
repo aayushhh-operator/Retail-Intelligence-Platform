@@ -1,13 +1,15 @@
 """Table management utilities."""
 
 import logging
+
 from warehouse.database import DatabaseManager
 
 logger = logging.getLogger(__name__)
 
+
 class TableManager:
     """Manages table-level operations like truncation."""
-    
+
     def __init__(self, db_manager: DatabaseManager):
         self.db = db_manager
 

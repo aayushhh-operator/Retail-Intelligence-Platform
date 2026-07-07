@@ -55,4 +55,3 @@ WAREHOUSES = (
     ("WH-EAST-01", "Kolkata"),
     ("WH-CENTRAL-01", "Nagpur"),
 )
-

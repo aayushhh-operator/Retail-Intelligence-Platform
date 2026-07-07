@@ -14,15 +14,18 @@ from config.pipeline_run import set_pipeline_run_id
 from transform.base_transformer import BaseTransformer
 from transform.business_rules import apply_business_rules
 from transform.cleaning import blank_to_none, clean_email, trim_whitespace
-from transform.config import BusinessRuleConfig, ImputationConfig, TransformationConfig
-from transform.deduplication import remove_exact_duplicates, remove_primary_key_duplicates
+from transform.config import (BusinessRuleConfig, ImputationConfig,
+                              TransformationConfig)
+from transform.deduplication import (remove_exact_duplicates,
+                                     remove_primary_key_duplicates)
 from transform.enrichment import enrich
 from transform.imputation import impute_rows
 from transform.metrics import TransformationMetrics
-from transform.normalization import normalize_category, normalize_country, normalize_phone, normalize_zipcode
+from transform.normalization import (normalize_category, normalize_country,
+                                     normalize_phone, normalize_zipcode)
 from transform.registry import build_default_registry
-from transform.standardization import boolean_value, money, standard_date, title_case
-
+from transform.standardization import (boolean_value, money, standard_date,
+                                       title_case)
 
 # ---------------------------------------------------------------------------
 # Cleaning tests
@@ -114,7 +117,11 @@ def test_title_case_converts_correctly() -> None:
 
 
 def test_remove_exact_duplicates_removes_identical_rows() -> None:
-    rows = [{"id": "1", "name": "A"}, {"id": "1", "name": "A"}, {"id": "2", "name": "B"}]
+    rows = [
+        {"id": "1", "name": "A"},
+        {"id": "1", "name": "A"},
+        {"id": "2", "name": "B"},
+    ]
     result, dropped = remove_exact_duplicates(rows)
     assert len(result) == 2
     assert dropped == 1
@@ -175,7 +182,14 @@ def test_enrich_customers_adds_derived_columns() -> None:
 
 
 def test_enrich_orders_adds_date_parts() -> None:
-    rows = [{"order_date": "2024-03-15", "total_amount": "150.00", "discount": "0.1", "quantity": "3"}]
+    rows = [
+        {
+            "order_date": "2024-03-15",
+            "total_amount": "150.00",
+            "discount": "0.1",
+            "quantity": "3",
+        }
+    ]
     enrich("orders", rows)
     assert rows[0]["order_year"] == 2024
     assert rows[0]["order_month"] == 3
@@ -207,8 +221,20 @@ def test_enrich_inventory_adds_status() -> None:
 
 def test_business_rules_drops_orders_with_zero_quantity() -> None:
     rows = [
-        {"customer_id": "C1", "product_id": "P1", "quantity": "0", "total_amount": "50", "unit_price": "50"},
-        {"customer_id": "C1", "product_id": "P1", "quantity": "2", "total_amount": "100", "unit_price": "50"},
+        {
+            "customer_id": "C1",
+            "product_id": "P1",
+            "quantity": "0",
+            "total_amount": "50",
+            "unit_price": "50",
+        },
+        {
+            "customer_id": "C1",
+            "product_id": "P1",
+            "quantity": "2",
+            "total_amount": "100",
+            "unit_price": "50",
+        },
     ]
     metrics = TransformationMetrics(dataset="orders")
     result = apply_business_rules("orders", rows, BusinessRuleConfig(), metrics)
@@ -250,7 +276,15 @@ def test_business_rules_flags_low_margin_products() -> None:
 def test_registry_contains_all_builtin_datasets() -> None:
     registry = build_default_registry()
     supported = registry.supported_datasets()
-    expected = {"customers", "products", "inventory", "orders", "payments", "shipping", "reviews"}
+    expected = {
+        "customers",
+        "products",
+        "inventory",
+        "orders",
+        "payments",
+        "shipping",
+        "reviews",
+    }
     assert expected.issubset(set(supported))
 
 
@@ -359,7 +393,9 @@ def test_base_transformer_reads_validation_results(tmp_path: Path) -> None:
     report_dir.mkdir()
 
     raw_file = raw_dir / "customers.csv"
-    _make_csv(raw_file, [{"customer_id": "C1", "first_name": "Alice", "last_name": "Smith"}])
+    _make_csv(
+        raw_file, [{"customer_id": "C1", "first_name": "Alice", "last_name": "Smith"}]
+    )
 
     registry = build_default_registry()
     transformer = registry.create(

@@ -1,13 +1,17 @@
 """Sales Analysis Page."""
+
 import sys
 from pathlib import Path
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-import streamlit as st
 import plotly.express as px
-from dashboard.services.analytics_service import get_sales_by_category, get_sales_by_region
+import streamlit as st
+
+from dashboard.services.analytics_service import (get_sales_by_category,
+                                                  get_sales_by_region)
 
 st.set_page_config(page_title="Sales Analysis", page_icon="📈", layout="wide")
 st.title("Sales Analysis")
@@ -27,7 +31,13 @@ with col2:
     st.subheader("Revenue by Country")
     reg_df = get_sales_by_region()
     if not reg_df.empty:
-        fig = px.pie(reg_df, names="country", values="revenue", title="Regional Revenue Share", hole=0.4)
+        fig = px.pie(
+            reg_df,
+            names="country",
+            values="revenue",
+            title="Regional Revenue Share",
+            hole=0.4,
+        )
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("No regional data available.")

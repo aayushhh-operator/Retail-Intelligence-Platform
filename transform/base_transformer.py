@@ -13,7 +13,8 @@ from config.pipeline_run import get_pipeline_run_id
 from transform.business_rules import apply_business_rules
 from transform.cleaning import blank_to_none, clean_email, trim_whitespace
 from transform.config import TRANSFORMATION_CONFIG, TransformationConfig
-from transform.deduplication import remove_exact_duplicates, remove_primary_key_duplicates
+from transform.deduplication import (remove_exact_duplicates,
+                                     remove_primary_key_duplicates)
 from transform.enrichment import enrich
 from transform.exceptions import TransformationError
 from transform.imputation import impute_rows
@@ -80,7 +81,9 @@ class BaseTransformer(ABC):
         """Read per-dataset validation results to guide transformation decisions."""
         report_path = validation_log_dir / "dataset_reports" / f"{self.dataset}.json"
         if not report_path.is_file():
-            self.logger.warning("%s | no validation report found at %s", self.dataset, report_path)
+            self.logger.warning(
+                "%s | no validation report found at %s", self.dataset, report_path
+            )
             return {}
         try:
             payload = json.loads(report_path.read_text(encoding="utf-8"))
@@ -94,14 +97,18 @@ class BaseTransformer(ABC):
             )
             return payload
         except (json.JSONDecodeError, OSError) as exc:
-            self.logger.warning("%s | failed to read validation report: %s", self.dataset, exc)
+            self.logger.warning(
+                "%s | failed to read validation report: %s", self.dataset, exc
+            )
             return {}
 
     def _clean(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Apply generic cleaning: trim whitespace, blank→None, email repair."""
         trim_whitespace(rows)
         blank_to_none(rows)
-        if self.config.business_rules.repair_emails and any("email" in row for row in rows):
+        if self.config.business_rules.repair_emails and any(
+            "email" in row for row in rows
+        ):
             repaired = 0
             for row in rows:
                 if row.get("email") is not None:
@@ -129,7 +136,9 @@ class BaseTransformer(ABC):
         """Remove exact duplicates then primary-key duplicates."""
         keep = self.config.deduplication.keep
         rows, exact_dropped = remove_exact_duplicates(rows, keep=keep)
-        rows, pk_dropped = remove_primary_key_duplicates(rows, self.primary_key, keep=keep)
+        rows, pk_dropped = remove_primary_key_duplicates(
+            rows, self.primary_key, keep=keep
+        )
         dropped = exact_dropped + pk_dropped
         self.metrics.rows_dropped += dropped
         self.metrics.steps.append(f"dedup:{dropped}")
@@ -138,9 +147,27 @@ class BaseTransformer(ABC):
     def _standardize(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Standardize common field types: dates, booleans, money amounts."""
         standardized = 0
-        date_fields = {"signup_date", "date_of_birth", "order_date", "dispatch_date", "delivery_date", "review_date", "last_updated", "launch_date"}
+        date_fields = {
+            "signup_date",
+            "date_of_birth",
+            "order_date",
+            "dispatch_date",
+            "delivery_date",
+            "review_date",
+            "last_updated",
+            "launch_date",
+        }
         boolean_fields = {"is_active", "verified_purchase"}
-        money_fields = {"cost_price", "selling_price", "unit_price", "total_amount", "amount", "shipping_cost", "tax", "discount"}
+        money_fields = {
+            "cost_price",
+            "selling_price",
+            "unit_price",
+            "total_amount",
+            "amount",
+            "shipping_cost",
+            "tax",
+            "discount",
+        }
         for row in rows:
             changed = False
             for field in date_fields:
@@ -164,7 +191,9 @@ class BaseTransformer(ABC):
     def _apply_business_rules(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Apply dataset-specific business rules (drop/repair logic)."""
         before = len(rows)
-        rows = apply_business_rules(self.dataset, rows, self.config.business_rules, self.metrics)
+        rows = apply_business_rules(
+            self.dataset, rows, self.config.business_rules, self.metrics
+        )
         self.metrics.steps.append(f"business_rules:dropped={before - len(rows)}")
         return rows
 
@@ -174,7 +203,9 @@ class BaseTransformer(ABC):
         self.metrics.steps.append(f"enrich:{enriched}")
         return rows
 
-    def _apply_schema(self, rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
+    def _apply_schema(
+        self, rows: list[dict[str, Any]]
+    ) -> tuple[list[dict[str, Any]], list[str]]:
         """Apply final column ordering per the processed schema."""
         mapped, fieldnames = apply_schema(self.dataset, rows)
         self.metrics.steps.append("schema_map")
@@ -214,11 +245,19 @@ class BaseTransformer(ABC):
             self.metrics.rows_output = len(rows)
             final_rows, fieldnames = self._apply_schema(rows)
 
-            from transform.exporters import export_dataset_report, export_processed_dataset
-            output_path = export_processed_dataset(self.processed_dir, self.dataset, final_rows, fieldnames)
-            self.logger.info("%s | wrote %d rows to %s", self.dataset, len(final_rows), output_path)
+            from transform.exporters import (export_dataset_report,
+                                             export_processed_dataset)
 
-            self.metrics.execution_time_seconds = round(time.perf_counter() - started_at, 4)
+            output_path = export_processed_dataset(
+                self.processed_dir, self.dataset, final_rows, fieldnames
+            )
+            self.logger.info(
+                "%s | wrote %d rows to %s", self.dataset, len(final_rows), output_path
+            )
+
+            self.metrics.execution_time_seconds = round(
+                time.perf_counter() - started_at, 4
+            )
             self.metrics.status = "SUCCESS"
             export_dataset_report(self.transform_report_dir, self.metrics)
             self.logger.info(
@@ -227,7 +266,9 @@ class BaseTransformer(ABC):
                 self.metrics.rows_output,
             )
         except Exception as exc:
-            self.metrics.execution_time_seconds = round(time.perf_counter() - started_at, 4)
+            self.metrics.execution_time_seconds = round(
+                time.perf_counter() - started_at, 4
+            )
             self.metrics.status = "FAILED"
             self.metrics.error_message = str(exc)
             self.logger.exception("%s | transformation failed: %s", self.dataset, exc)

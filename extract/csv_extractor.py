@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from extract.extractor import BaseExtractor, ExtractedPayload, require_existing_file
+from extract.extractor import (BaseExtractor, ExtractedPayload,
+                               require_existing_file)
 from extract.utils import copy_file, count_csv_rows, detect_csv_columns
 
 
@@ -30,4 +31,3 @@ class CSVExtractor(BaseExtractor):
             file_size_bytes=destination.stat().st_size,
             extra={"format": "csv", "encoding": "utf-8"},
         )
-

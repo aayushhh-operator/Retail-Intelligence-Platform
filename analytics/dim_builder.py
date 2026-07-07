@@ -1,10 +1,12 @@
 """Dimension builder executing SQL transformations."""
 
 import logging
-from analytics.utils import AnalyticsDBManager
+
 from analytics.config import SOURCE_SCHEMA, TARGET_SCHEMA
+from analytics.utils import AnalyticsDBManager
 
 logger = logging.getLogger(__name__)
+
 
 class DimensionBuilder:
     """Builds dimension tables using SQL transformations."""

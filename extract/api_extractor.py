@@ -36,15 +36,15 @@ class APIExtractor(BaseExtractor):
     def save(self, extracted_data: bytes) -> ExtractedPayload:
         """Save API response bytes as raw JSON or CSV and collect metadata."""
         import pandas as pd
-        
+
         destination = self.destination_path()
         destination.parent.mkdir(parents=True, exist_ok=True)
-        
+
         payload: Any = json.loads(extracted_data.decode("utf-8"))
-        
+
         if destination.suffix == ".csv":
             # Flatten dict if nested
-            def flatten_dict(d, parent_key='', sep='.'):
+            def flatten_dict(d, parent_key="", sep="."):
                 items = []
                 for k, v in d.items():
                     new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -53,14 +53,17 @@ class APIExtractor(BaseExtractor):
                     else:
                         items.append((new_key, v))
                 return dict(items)
-            
+
             if isinstance(payload, list):
-                payload = [flatten_dict(item) if isinstance(item, dict) else {"value": item} for item in payload]
+                payload = [
+                    flatten_dict(item) if isinstance(item, dict) else {"value": item}
+                    for item in payload
+                ]
             elif isinstance(payload, dict):
                 payload = [flatten_dict(payload)]
             else:
                 payload = []
-                
+
             df = pd.DataFrame(payload)
             df.to_csv(destination, index=False)
             rows = len(df)
@@ -71,7 +74,9 @@ class APIExtractor(BaseExtractor):
             destination.write_bytes(extracted_data)
             if isinstance(payload, list):
                 rows = len(payload)
-                columns = sorted({key for item in payload if isinstance(item, dict) for key in item})
+                columns = sorted(
+                    {key for item in payload if isinstance(item, dict) for key in item}
+                )
             elif isinstance(payload, dict):
                 rows = 1
                 columns = sorted(payload.keys())
@@ -88,4 +93,3 @@ class APIExtractor(BaseExtractor):
             file_size_bytes=file_size_bytes,
             extra=extra,
         )
-

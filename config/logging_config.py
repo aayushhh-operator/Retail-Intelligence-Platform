@@ -39,27 +39,51 @@ def configure_logging(
     if logger.handlers:
         return logger
 
+    pipeline_filter = PipelineRunFilter()
     formatter = logging.Formatter(
-        fmt=(
-            "%(asctime)s | %(levelname)s | %(name)s | "
-            "%(pipeline_run_id)s | %(message)s"
-        ),
+        fmt="%(asctime)s | %(levelname)s | %(name)s | %(pipeline_run_id)s | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    pipeline_filter = PipelineRunFilter()
-
+    # Console Handler
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)
     console_handler.setFormatter(formatter)
     console_handler.addFilter(pipeline_filter)
-
-    file_handler = logging.FileHandler(log_path)
-    file_handler.setLevel(log_level)
-    file_handler.setFormatter(formatter)
-    file_handler.addFilter(pipeline_filter)
-
     logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
+
+    # Base Application Log (Rotating)
+    from logging.handlers import RotatingFileHandler
+
+    app_log_path = log_dir / "retail_intelligence.log"
+    app_handler = RotatingFileHandler(
+        app_log_path, maxBytes=5 * 1024 * 1024, backupCount=5
+    )
+    app_handler.setLevel(log_level)
+    app_handler.setFormatter(formatter)
+    app_handler.addFilter(pipeline_filter)
+    logger.addHandler(app_handler)
+
+    # Dedicated Pipeline Log (Rotating)
+    if "pipeline" in logger_name.lower() or pipeline_run_id:
+        pipeline_log_path = log_dir / "pipeline.log"
+        pipeline_handler = RotatingFileHandler(
+            pipeline_log_path, maxBytes=10 * 1024 * 1024, backupCount=5
+        )
+        pipeline_handler.setLevel(log_level)
+        pipeline_handler.setFormatter(formatter)
+        pipeline_handler.addFilter(pipeline_filter)
+        logger.addHandler(pipeline_handler)
+
+    # Dedicated AI Log (Rotating)
+    if "ai" in logger_name.lower():
+        ai_log_path = log_dir / "ai.log"
+        ai_handler = RotatingFileHandler(
+            ai_log_path, maxBytes=5 * 1024 * 1024, backupCount=3
+        )
+        ai_handler.setLevel(logging.DEBUG)  # Always keep debug for AI
+        ai_handler.setFormatter(formatter)
+        ai_handler.addFilter(pipeline_filter)
+        logger.addHandler(ai_handler)
 
     return logger

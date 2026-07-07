@@ -107,7 +107,9 @@ class BaseExtractor(ABC):
                 dataset_name=self.source_config.dataset_name,
                 source_type=self.source_config.source_type,
                 original_path=self.source_config.source,
-                destination_path=str(self.raw_directory / self.source_config.raw_file_name),
+                destination_path=str(
+                    self.raw_directory / self.source_config.raw_file_name
+                ),
                 rows=None,
                 columns=[],
                 file_size_bytes=None,
@@ -127,4 +129,3 @@ def require_existing_file(path: Path) -> None:
     """Raise a domain exception if a configured file source is missing."""
     if not path.is_file():
         raise ExtractionError(f"Source file does not exist: {path}")
-

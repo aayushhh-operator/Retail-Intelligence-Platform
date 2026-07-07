@@ -93,7 +93,9 @@ EXPECTED_SCHEMAS: dict[str, dict[str, str]] = {
 class SchemaValidator:
     """Validate required columns, unexpected columns, and simple datatypes."""
 
-    def validate(self, dataset_name: str, rows: list[dict[str, Any]]) -> list[RuleResult]:
+    def validate(
+        self, dataset_name: str, rows: list[dict[str, Any]]
+    ) -> list[RuleResult]:
         """Run schema validation for a dataset."""
         expected_schema = EXPECTED_SCHEMAS.get(dataset_name, {})
         if not expected_schema:
@@ -111,7 +113,11 @@ class SchemaValidator:
                 not missing,
                 "ERROR",
                 len(rows) if missing else 0,
-                f"Missing required columns: {', '.join(missing)}" if missing else "All required columns present",
+                (
+                    f"Missing required columns: {', '.join(missing)}"
+                    if missing
+                    else "All required columns present"
+                ),
                 missing,
             ),
             RuleResult(
@@ -119,7 +125,11 @@ class SchemaValidator:
                 not unexpected,
                 "WARNING",
                 len(rows) if unexpected else 0,
-                f"Unexpected columns: {', '.join(unexpected)}" if unexpected else "No unexpected columns",
+                (
+                    f"Unexpected columns: {', '.join(unexpected)}"
+                    if unexpected
+                    else "No unexpected columns"
+                ),
                 unexpected,
             ),
         ]
@@ -127,7 +137,9 @@ class SchemaValidator:
         for column, expected_type in expected_schema.items():
             if column not in actual_set:
                 continue
-            invalid_count = sum(1 for row in rows if not _matches_type(row.get(column), expected_type))
+            invalid_count = sum(
+                1 for row in rows if not _matches_type(row.get(column), expected_type)
+            )
             results.append(
                 RuleResult(
                     f"datatype_{column}",
@@ -155,4 +167,3 @@ def _matches_type(value: Any, expected_type: str) -> bool:
     if expected_type == "boolean":
         return str(value).lower() in {"true", "false", "0", "1"}
     return isinstance(value, str) or value is not None
-

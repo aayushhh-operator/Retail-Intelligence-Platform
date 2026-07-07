@@ -10,7 +10,8 @@ from validate.business_rule_validator import BusinessRuleValidator
 from validate.report_generator import ValidationReportGenerator
 from validate.schema_validator import SchemaValidator
 from validate.statistics import generate_statistics
-from validate.validator import ValidationIssue, calculate_quality_score, quality_status
+from validate.validator import (ValidationIssue, calculate_quality_score,
+                                quality_status)
 
 
 def test_email_validator_detects_invalid_email() -> None:
@@ -29,7 +30,9 @@ def test_email_validator_detects_invalid_email() -> None:
 
     results = BusinessRuleValidator().validate("customers", rows, {})
 
-    assert any(result.rule_name == "valid_email" and not result.passed for result in results)
+    assert any(
+        result.rule_name == "valid_email" and not result.passed for result in results
+    )
 
 
 def test_price_validator_detects_negative_product_price() -> None:
@@ -38,7 +41,10 @@ def test_price_validator_detects_negative_product_price() -> None:
 
     results = BusinessRuleValidator().validate("products", rows, {})
 
-    assert any(result.rule_name == "positive_price" and result.affected_rows == 1 for result in results)
+    assert any(
+        result.rule_name == "positive_price" and result.affected_rows == 1
+        for result in results
+    )
 
 
 def test_date_validator_detects_future_order_date() -> None:
@@ -57,7 +63,10 @@ def test_date_validator_detects_future_order_date() -> None:
 
     results = BusinessRuleValidator().validate("orders", rows, context)
 
-    assert any(result.rule_name == "order_date_not_future" and not result.passed for result in results)
+    assert any(
+        result.rule_name == "order_date_not_future" and not result.passed
+        for result in results
+    )
 
 
 def test_schema_validator_detects_missing_required_column() -> None:
@@ -66,7 +75,9 @@ def test_schema_validator_detects_missing_required_column() -> None:
 
     results = SchemaValidator().validate("customers", rows)
 
-    required_result = next(result for result in results if result.rule_name == "required_columns")
+    required_result = next(
+        result for result in results if result.rule_name == "required_columns"
+    )
     assert not required_result.passed
     assert "email" in required_result.affected_columns
 

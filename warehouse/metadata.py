@@ -1,13 +1,15 @@
 """Metadata recording utility."""
 
+from datetime import datetime
+from typing import Any, Dict, List
+
 from warehouse.config import METADATA_DIR
 from warehouse.utils import write_json
-from datetime import datetime
-from typing import Dict, Any, List
+
 
 class WarehouseMetadata:
     """Generates JSON warehouse metadata."""
-    
+
     def __init__(self):
         self.execution_time: str = datetime.now().isoformat()
         self.datasets_loaded: List[str] = []
@@ -33,6 +35,6 @@ class WarehouseMetadata:
             "datasets_loaded": self.datasets_loaded,
             "tables": self.tables,
             "row_counts": self.row_counts,
-            "statistics": self.statistics
+            "statistics": self.statistics,
         }
         write_json(METADATA_DIR / "warehouse_metadata.json", payload)

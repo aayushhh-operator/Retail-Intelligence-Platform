@@ -27,4 +27,3 @@ class TransformationMetrics:
     def to_dict(self) -> dict[str, Any]:
         """Return JSON-serializable metrics."""
         return asdict(self)
-

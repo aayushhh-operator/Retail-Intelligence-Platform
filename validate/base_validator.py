@@ -15,7 +15,8 @@ from validate.business_rule_validator import BusinessRuleValidator
 from validate.exceptions import ValidationError
 from validate.profiler import DatasetProfiler
 from validate.schema_validator import SchemaValidator
-from validate.validator import ValidationIssue, calculate_quality_score, quality_status
+from validate.validator import (ValidationIssue, calculate_quality_score,
+                                quality_status)
 
 
 @dataclass(frozen=True)
@@ -59,11 +60,17 @@ class BaseValidator(ABC):
         """Run schema and business validation rules."""
         results = []
         self.logger.info("%s | schema validation started", self.dataset_config.name)
-        results.extend(self.schema_validator.validate(self.dataset_config.name, self.rows))
+        results.extend(
+            self.schema_validator.validate(self.dataset_config.name, self.rows)
+        )
         self.logger.info("%s | business rules started", self.dataset_config.name)
-        results.extend(self.rule_validator.validate(self.dataset_config.name, self.rows, context))
+        results.extend(
+            self.rule_validator.validate(self.dataset_config.name, self.rows, context)
+        )
         self.rule_results = [result.to_dict() for result in results]
-        self.issues = [issue for result in results if (issue := result.to_issue()) is not None]
+        self.issues = [
+            issue for result in results if (issue := result.to_issue()) is not None
+        ]
         return self.issues
 
     def generate_statistics(self) -> dict[str, Any]:
@@ -106,7 +113,12 @@ class BaseValidator(ABC):
             self.validate(context)
             elapsed = round(time.perf_counter() - started_at, 4)
             report = self.generate_report(elapsed)
-            self.logger.info("%s | validation completed status=%s score=%.2f", self.dataset_config.name, self.status, self.quality_score)
+            self.logger.info(
+                "%s | validation completed status=%s score=%.2f",
+                self.dataset_config.name,
+                self.status,
+                self.quality_score,
+            )
             return report
         except Exception as exc:
             elapsed = round(time.perf_counter() - started_at, 4)
@@ -143,4 +155,3 @@ def require_dataset(path: Path) -> None:
     """Raise if a raw dataset is missing."""
     if not path.is_file():
         raise ValidationError(f"Raw dataset does not exist: {path}")
-

@@ -1,29 +1,32 @@
 """Custom Postgres Hook Wrapper for Metadata Logging."""
 
 import logging
-import psycopg2
-from psycopg2 import pool
-from contextlib import contextmanager
-from airflow.plugins_manager import AirflowPlugin
 import sys
+from contextlib import contextmanager
 from pathlib import Path
+
+import psycopg2
+from airflow.plugins_manager import AirflowPlugin
+from psycopg2 import pool
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from airflow.config.airflow_config import (
-    DATABASE_HOST, DATABASE_PORT, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
-)
+from airflow.config.airflow_config import (DATABASE_HOST, DATABASE_NAME,
+                                           DATABASE_PASSWORD, DATABASE_PORT,
+                                           DATABASE_USER)
 
 logger = logging.getLogger(__name__)
+
 
 class MetadataPostgresHook:
     """
     A custom Postgres Hook dedicated to safe, retryable execution of metadata logging queries.
-    Avoids using Airflow's built-in PostgresHook to prevent cyclic dependencies or issues 
+    Avoids using Airflow's built-in PostgresHook to prevent cyclic dependencies or issues
     if the Airflow metastore is running on a different instance than our Retail DB.
     """
+
     _connection_pool = None
 
     @classmethod
@@ -31,12 +34,13 @@ class MetadataPostgresHook:
         if cls._connection_pool is None:
             try:
                 cls._connection_pool = psycopg2.pool.ThreadedConnectionPool(
-                    1, 10,
+                    1,
+                    10,
                     host=DATABASE_HOST,
                     port=DATABASE_PORT,
                     dbname=DATABASE_NAME,
                     user=DATABASE_USER,
-                    password=DATABASE_PASSWORD
+                    password=DATABASE_PASSWORD,
                 )
             except Exception as e:
                 logger.error(f"Failed to initialize metadata connection pool: {e}")
@@ -101,6 +105,7 @@ class MetadataPostgresHook:
             except Exception as e:
                 logger.error(f"Error executing metadata query: {e}")
                 raise
+
 
 class MetadataHookPlugin(AirflowPlugin):
     name = "metadata_postgres_hook_plugin"

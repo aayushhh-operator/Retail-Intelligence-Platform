@@ -55,19 +55,11 @@ class CustomersTransformer(BaseTransformer):
 
 
 class ProductsTransformer(BaseTransformer):
-    """Transformer for the products raw dataset (JSON)."""
+    """Transformer for the products raw dataset (CSV)."""
 
     def load(self) -> list[dict[str, Any]]:
-        text = self.raw_path.read_text(encoding="utf-8").strip()
-        if not text:
-            return []
-        try:
-            payload = json.loads(text)
-        except json.JSONDecodeError:
-            payload = [json.loads(line) for line in text.splitlines() if line.strip()]
-        if isinstance(payload, list):
-            return [_flatten_dict(item) if isinstance(item, dict) else {"value": item} for item in payload]
-        return [_flatten_dict(payload)] if isinstance(payload, dict) else []
+        with self.raw_path.open("r", encoding="utf-8", newline="") as fh:
+            return list(csv.DictReader(fh))
 
     def transform(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         rows = self._clean(rows)

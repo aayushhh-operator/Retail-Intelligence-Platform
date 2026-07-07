@@ -59,7 +59,7 @@ def default_sources() -> list[SourceConfig]:
         SourceConfig("payments", "CSV", str(source_dir / "payments.csv"), "payments.csv"),
         SourceConfig("reviews", "CSV", str(source_dir / "reviews.csv"), "reviews.csv"),
         SourceConfig("shipping", "CSV", str(source_dir / "shipping.csv"), "shipping.csv"),
-        SourceConfig("products", "API", "https://fakestoreapi.com/products", "products.json"),
+        SourceConfig("products", "API", "https://fakestoreapi.com/products", "products.csv"),
         SourceConfig("website_events", "JSON", str(source_dir / "website_events.json"), "website_events.json"),
     ]
 

@@ -2,10 +2,10 @@
 
 CREATE TABLE IF NOT EXISTS analytics.fact_orders (
     order_id VARCHAR(50), -- Degenerate dimension
-    customer_key INTEGER REFERENCES analytics.dim_customer(customer_key),
-    product_key INTEGER REFERENCES analytics.dim_product(product_key),
-    date_key INTEGER REFERENCES analytics.dim_date(date_key),
-    time_key INTEGER REFERENCES analytics.dim_time(time_key),
+    customer_key INTEGER,
+    product_key INTEGER,
+    date_key INTEGER,
+    time_key INTEGER,
     quantity INTEGER,
     unit_price DECIMAL(10, 2),
     discount DECIMAL(10, 2),
@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS analytics.fact_orders (
 CREATE TABLE IF NOT EXISTS analytics.fact_payments (
     payment_id VARCHAR(50),
     order_id VARCHAR(50),
-    payment_method_key INTEGER REFERENCES analytics.dim_payment_method(payment_method_key),
-    date_key INTEGER REFERENCES analytics.dim_date(date_key),
-    time_key INTEGER REFERENCES analytics.dim_time(time_key),
+    payment_method_key INTEGER,
+    date_key INTEGER,
+    time_key INTEGER,
     amount DECIMAL(12, 2),
     payment_status VARCHAR(50)
 );
@@ -27,20 +27,20 @@ CREATE TABLE IF NOT EXISTS analytics.fact_payments (
 CREATE TABLE IF NOT EXISTS analytics.fact_shipping (
     shipping_id VARCHAR(50),
     order_id VARCHAR(50),
-    carrier_key INTEGER REFERENCES analytics.dim_shipping_carrier(carrier_key),
-    geography_key INTEGER REFERENCES analytics.dim_geography(geography_key),
-    date_key_dispatch INTEGER REFERENCES analytics.dim_date(date_key),
-    date_key_delivery INTEGER REFERENCES analytics.dim_date(date_key),
+    carrier_key INTEGER,
+    geography_key INTEGER,
+    date_key_dispatch INTEGER,
+    date_key_delivery INTEGER,
     delivery_duration INTEGER,
     shipping_status VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS analytics.fact_customer_activity (
     event_id VARCHAR(50),
-    customer_key INTEGER REFERENCES analytics.dim_customer(customer_key),
-    product_key INTEGER REFERENCES analytics.dim_product(product_key),
-    date_key INTEGER REFERENCES analytics.dim_date(date_key),
-    time_key INTEGER REFERENCES analytics.dim_time(time_key),
+    customer_key INTEGER,
+    product_key INTEGER,
+    date_key INTEGER,
+    time_key INTEGER,
     event_type VARCHAR(100),
     session_id VARCHAR(100)
 );

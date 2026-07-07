@@ -99,8 +99,8 @@ class FactBuilder:
                 we.event_id,
                 COALESCE(c.customer_key, -1),
                 -1, -- We don't have product context in website_events directly unless parsed from URL
-                COALESCE(CAST(TO_CHAR(we."timestamp", 'YYYYMMDD') AS INTEGER), -1),
-                COALESCE(CAST(TO_CHAR(we."timestamp", 'HH24MISS') AS INTEGER), -1),
+                COALESCE(CAST(TO_CHAR(we.event_timestamp, 'YYYYMMDD') AS INTEGER), -1),
+                COALESCE(CAST(TO_CHAR(we.event_timestamp, 'HH24MISS') AS INTEGER), -1),
                 we.event_type,
                 NULL -- session_id is no longer in warehouse due to schema mapper mappings
             FROM {SOURCE_SCHEMA}.website_events we

@@ -72,7 +72,7 @@ class TransformationPipelineRunner:
         # Dataset definitions: (name, filename, primary_key)
         dataset_definitions = [
             ("customers", "customers.csv", "customer_id"),
-            ("products", "products.json", "id"),
+            ("products", "products.csv", "id"),
             ("inventory", "inventory.csv", "inventory_id"),
             ("orders", "orders.csv", "order_id"),
             ("payments", "payments.csv", "payment_id"),

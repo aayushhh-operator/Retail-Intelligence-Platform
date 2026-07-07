@@ -1,0 +1,9 @@
+The user asked: "{question}"
+You wrote the following SQL:
+{sql}
+
+The execution resulted in this data summary:
+{data_summary}
+
+Explain the findings to the user like a Business Analyst. Just generate key insights based on the data. 
+DO NOT generate recommendations, next steps, or action items. Be concise.

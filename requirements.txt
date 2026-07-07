@@ -12,3 +12,5 @@ plotly
 requests
 langchain
 openai
+groq  
+ 

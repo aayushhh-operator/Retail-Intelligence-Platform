@@ -34,27 +34,58 @@ class APIExtractor(BaseExtractor):
             raise ExtractionError(f"API request failed: {exc}") from exc
 
     def save(self, extracted_data: bytes) -> ExtractedPayload:
-        """Save API response bytes as raw JSON and collect metadata."""
+        """Save API response bytes as raw JSON or CSV and collect metadata."""
+        import pandas as pd
+        
         destination = self.destination_path()
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(extracted_data)
+        
         payload: Any = json.loads(extracted_data.decode("utf-8"))
-
-        if isinstance(payload, list):
-            rows = len(payload)
-            columns = sorted({key for item in payload if isinstance(item, dict) for key in item})
-        elif isinstance(payload, dict):
-            rows = 1
-            columns = sorted(payload.keys())
+        
+        if destination.suffix == ".csv":
+            # Flatten dict if nested
+            def flatten_dict(d, parent_key='', sep='.'):
+                items = []
+                for k, v in d.items():
+                    new_key = f"{parent_key}{sep}{k}" if parent_key else k
+                    if isinstance(v, dict):
+                        items.extend(flatten_dict(v, new_key, sep=sep).items())
+                    else:
+                        items.append((new_key, v))
+                return dict(items)
+            
+            if isinstance(payload, list):
+                payload = [flatten_dict(item) if isinstance(item, dict) else {"value": item} for item in payload]
+            elif isinstance(payload, dict):
+                payload = [flatten_dict(payload)]
+            else:
+                payload = []
+                
+            df = pd.DataFrame(payload)
+            df.to_csv(destination, index=False)
+            rows = len(df)
+            columns = sorted(df.columns.tolist())
+            file_size_bytes = destination.stat().st_size
+            extra = {"format": "csv", "http_method": "GET"}
         else:
-            rows = 1
-            columns = []
+            destination.write_bytes(extracted_data)
+            if isinstance(payload, list):
+                rows = len(payload)
+                columns = sorted({key for item in payload if isinstance(item, dict) for key in item})
+            elif isinstance(payload, dict):
+                rows = 1
+                columns = sorted(payload.keys())
+            else:
+                rows = 1
+                columns = []
+            file_size_bytes = destination.stat().st_size
+            extra = {"format": "json", "http_method": "GET"}
 
         return ExtractedPayload(
             destination_path=destination,
             rows=rows,
             columns=columns,
-            file_size_bytes=destination.stat().st_size,
-            extra={"format": "json", "http_method": "GET"},
+            file_size_bytes=file_size_bytes,
+            extra=extra,
         )
 

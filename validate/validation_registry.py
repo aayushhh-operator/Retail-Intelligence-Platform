@@ -49,7 +49,7 @@ def default_datasets() -> list[DatasetConfig]:
         DatasetConfig("inventory", raw_dir / "inventory.csv", "CSV", "inventory_id"),
         DatasetConfig("orders", raw_dir / "orders.csv", "CSV", "order_id"),
         DatasetConfig("payments", raw_dir / "payments.csv", "CSV", "payment_id"),
-        DatasetConfig("products", raw_dir / "products.json", "JSON", "id"),
+        DatasetConfig("products", raw_dir / "products.csv", "CSV", "id"),
         DatasetConfig("reviews", raw_dir / "reviews.csv", "CSV", "review_id"),
         DatasetConfig("shipping", raw_dir / "shipping.csv", "CSV", "shipping_id"),
         DatasetConfig("website_events", raw_dir / "website_events.json", "JSON", None),

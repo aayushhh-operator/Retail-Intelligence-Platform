@@ -1,0 +1,10 @@
+Given the following database schema:
+{schema}
+
+Write a strictly read-only PostgreSQL query to answer this user question:
+"{question}"
+
+IMPORTANT RULES:
+1. Do not join `analytics` tables (which use integer surrogate keys like `customer_key`) directly with `warehouse` tables (which use varchar natural keys like `customer_id`). 
+2. If using `analytics.fact_orders`, join with `analytics.dim_customer` on `customer_key`.
+3. Return ONLY the raw SQL query. Do not wrap it in markdown block quotes (```sql). Do not add explanations. Do not use semicolons to chain queries.

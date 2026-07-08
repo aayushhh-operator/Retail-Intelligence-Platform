@@ -1,12 +1,21 @@
-# Streamlit Analytics Dashboard
+# Streamlit Analytics Dashboard (Enterprise UX Edition)
 
 This directory contains the Streamlit-based web application that acts as the front-end Business Intelligence and observability layer for the Retail Intelligence Platform.
 
-## Overview
+## Theming & UI Framework
+The dashboard was heavily customized to emulate premium, enterprise-grade BI tools (Power BI, Looker, etc.).
 
-The dashboard connects to our PostgreSQL database (`analytics` schema, `warehouse` schema, and `airflow` metadata schema) to provide business KPIs and pipeline monitoring in a single unified view.
+### Component Hierarchy
+To avoid scattered inline styles, the UI is broken into modular components:
+- `components/layout.py`: Injects custom CSS, defines standard grid layouts, and renders headers.
+- `components/cards.py`: Reusable, animated KPI metric cards with built-in trend indicators.
+- `components/charts.py`: Centralized Plotly wrappers that enforce corporate color palettes, remove gridlines, and lock margins.
+- `components/filters.py`: Global sidebar filtering systems.
+- `components/states.py`: Fallback UI components (loading spinners, empty state illustrations, error tracebacks).
+- `styles/theme.css`: The core stylesheet overriding Streamlit's default padding, typography, and card behaviors.
 
-It is strictly a **data consumption layer**. No heavy transformations or ETL logic occur here.
+### Theming
+The dashboard supports Dark and Light mode automatically based on the user's OS preference. You can manually force a theme by going to the top-right Streamlit settings menu > Settings > Theme.
 
 ## Pages
 1. **Overview**: High-level business KPIs.
@@ -16,16 +25,12 @@ It is strictly a **data consumption layer**. No heavy transformations or ETL log
 5. **Operations Monitoring**: Supply chain and warehouse status.
 6. **Pipeline Health**: Airflow orchestration observability, showing DAG and Task execution success rates.
 7. **Spark Analytics**: Visualization of heavy Spark workloads (like sessionization and event funnels).
+8. **AI Copilot**: A fully functional conversational UI with side-by-side SQL generation and charting.
+9. **Settings**: Application preferences and cache clearing.
 
 ## How to Run
 
-If you are running this locally (outside of docker), ensure your virtual environment is active and your `.env` file is properly configured with your PostgreSQL credentials.
-
 ```bash
-streamlit run dashboard/app.py
+make dashboard
 ```
-
-## Performance Considerations
-- The app utilizes `@st.cache_resource` for database engine creation.
-- Large datasets should be pre-aggregated in the backend (via SQL views, DBT, or Spark). The dashboard should never pull millions of rows into memory to plot them; it should push the `GROUP BY` logic down to the database using the `services/` layer.
-- Ensure the database server has adequate resources to handle analytical queries.
+*(Or manually via `streamlit run dashboard/app.py`)*

@@ -1,0 +1,139 @@
+/* Retail Intelligence Platform - Modern Theme */
+
+/* Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Hide Streamlit Default Elements */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Base Container Styling */
+.block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+    max-width: 1400px;
+}
+
+/* Card Styling */
+div[data-testid="stMetric"] {
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+div[data-testid="stMetric"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Metric Label Typography */
+div[data-testid="stMetricLabel"] > div {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: var(--text-muted, #666666);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+/* Metric Value Typography */
+div[data-testid="stMetricValue"] > div {
+    font-size: 2.2rem !important;
+    font-weight: 700 !important;
+    color: var(--text-primary, #111827);
+    line-height: 1.2;
+}
+
+/* Metric Delta Typography */
+div[data-testid="stMetricDelta"] > div {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+}
+
+/* Expander Styling */
+.streamlit-expanderHeader {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--text-primary, #111827) !important;
+    background-color: var(--bg-secondary, #f9fafb) !important;
+    border-radius: 8px !important;
+}
+
+.streamlit-expanderContent {
+    border: 1px solid var(--border-color, #e0e0e0) !important;
+    border-top: none !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+    padding: 1rem !important;
+}
+
+/* Tab Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+    border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 3rem;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 4px 4px 0 0;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-muted, #666666);
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--primary-color, #2563eb) !important;
+    border-bottom: 2px solid var(--primary-color, #2563eb) !important;
+}
+
+/* Sidebar Styling */
+section[data-testid="stSidebar"] {
+    background-color: var(--bg-sidebar, #111827);
+    color: #ffffff;
+}
+
+section[data-testid="stSidebar"] a {
+    color: #e5e7eb;
+}
+
+section[data-testid="stSidebar"] a:hover {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+/* Dark Mode Variables (Streamlit injects a data-theme attribute on the root or body) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --card-bg: #1f2937;
+        --border-color: #374151;
+        --text-primary: #f9fafb;
+        --text-muted: #9ca3af;
+        --bg-secondary: #111827;
+        --primary-color: #3b82f6;
+    }
+    
+    div[data-testid="stMetricLabel"] > div {
+        color: var(--text-muted);
+    }
+    
+    div[data-testid="stMetricValue"] > div {
+        color: var(--text-primary);
+    }
+}

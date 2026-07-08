@@ -1,37 +1,44 @@
 """Overview Page."""
 
 import sys
+import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# Ensure root is in sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import plotly.express as px
 import streamlit as st
 
-from dashboard.services.analytics_service import (get_overview_kpis,
-                                                  get_sales_trend)
+from dashboard.components.layout import configure_page, render_header
+from dashboard.components.cards import render_kpi_card
+from dashboard.components.charts import render_chart
+from dashboard.components.states import render_empty_state
+from dashboard.services.analytics_service import get_overview_kpis, get_sales_trend
 
-st.set_page_config(page_title="Overview", page_icon="📈", layout="wide")
-st.title("Business Overview")
+configure_page("Overview")
+render_header("Business Overview", "High-level Executive Summary")
 
 kpis = get_overview_kpis()
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.metric("Total Revenue", f"${kpis['revenue']:,.2f}")
+    render_kpi_card("Total Revenue", f"${kpis['revenue']:,.2f}", "+5.2%", "normal", "💵")
 with col2:
-    st.metric("Total Orders", f"{kpis['orders']:,}")
+    render_kpi_card("Total Orders", f"{kpis['orders']:,}", "+1.1%", "normal", "📦")
 with col3:
-    st.metric("Avg Order Value", f"${kpis['aov']:,.2f}")
+    render_kpi_card("Avg Order Value", f"${kpis['aov']:,.2f}", "-0.5%", "inverse", "🛒")
 
-st.markdown("---")
-st.subheader("Revenue Trend")
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("### 📈 Revenue Trend")
+
 trend_df = get_sales_trend()
 
 if not trend_df.empty:
-    fig = px.line(trend_df, x="dt", y="daily_revenue", title="Daily Revenue")
-    st.plotly_chart(fig, use_container_width=True)
+    fig = px.area(trend_df, x="dt", y="daily_revenue", 
+                  title="Daily Revenue (30 Days)",
+                  labels={"dt": "Date", "daily_revenue": "Revenue ($)"})
+    render_chart(fig)
 else:
-    st.info("No sales data available to plot yet.")
+    render_empty_state("No Sales Data", "The data warehouse has not accumulated enough sales data to render this chart.", "📉")
+
